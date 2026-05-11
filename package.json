@@ -1,0 +1,43 @@
+{
+  "name": "@your-username/timestool",
+  "version": "1.0.0",
+  "description": "Unix timestamp ↔ date conversion CLI tool. Easily convert between Unix timestamps and readable dates with support for custom formats and timezones.",
+  "main": "index.js",
+  "bin": {
+    "timestool": "bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "timestamp",
+    "date",
+    "conversion",
+    "cli",
+    "tool",
+    "unix",
+    "time",
+    "formatter",
+    "dayjs"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/timestool.git"
+  },
+  "homepage": "https://github.com/your-username/timestool#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/timestool/issues"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "preferGlobal": true,
+  "dependencies": {
+    "commander": "^14.0.3",
+    "dayjs": "^1.11.20"
+  }
+}
