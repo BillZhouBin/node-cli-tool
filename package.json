@@ -1,10 +1,10 @@
 {
-  "name": "@your-username/timestool",
+  "name": "@zi_xiao_jun/nodetools",
   "version": "1.0.0",
   "description": "Unix timestamp ↔ date conversion CLI tool. Easily convert between Unix timestamps and readable dates with support for custom formats and timezones.",
   "main": "index.js",
   "bin": {
-    "timestool": "bin/cli.js"
+    "nodetools": "bin/cli.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
@@ -21,16 +21,16 @@
     "formatter",
     "dayjs"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "1522129455@qq.com",
   "license": "MIT",
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/timestool.git"
+    "url": "https://github.com/BillZhouBin/node-cli-tool.git"
   },
-  "homepage": "https://github.com/your-username/timestool#readme",
+  "homepage": "https://github.com/BillZhouBin/node-cli-tool#readme",
   "bugs": {
-    "url": "https://github.com/your-username/timestool/issues"
+    "url": "https://github.com/BillZhouBin/node-cli-tool/issues"
   },
   "engines": {
     "node": ">=12.0.0"
