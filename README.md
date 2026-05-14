@@ -223,6 +223,35 @@ node bin/cli.js now --unit milliseconds
 
 Display common date format examples.
 
+### `web`
+
+Launch a web-based visual interface for timestamp conversion.
+
+**Options:**
+- `-p, --port <port>` — Port number for the web server (default: `3000`)
+- `-n, --no-open` — Do not open browser automatically
+
+**Examples:**
+```bash
+nodetools web                    # Launch web interface with default port (3000)
+nodetools web --port 8080        # Use custom port
+nodetools web --no-open          # Start server without opening browser
+```
+
+**Features:**
+- Visual timestamp ↔ date conversion
+- Real-time current timestamp display
+- Timezone selection
+- Time difference calculator
+- One-click copy results
+
+**Usage:**
+```bash
+nodetools web
+# Output: ✅ Web interface is running at: http://localhost:3000
+# Browser will open automatically
+```
+
 ## Supported Date Formats
 
 When specifying custom formats with `--format`, use dayjs format tokens:
@@ -262,8 +291,11 @@ node_tool/
 │   ├── converters.js       # Core conversion functions
 │   ├── formatters.js       # Output formatting functions
 │   └── utils.js            # Utility functions & validation
+├── web/
+│   └── index.html          # Web interface (visual tool)
 ├── package.json            # Project metadata and dependencies
-└── README.md               # This file
+├── README.md               # English documentation
+└── README_zh.md            # Chinese documentation
 ```
 
 ## Dependencies

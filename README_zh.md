@@ -223,6 +223,35 @@ node bin/cli.js now --unit milliseconds
 
 显示常用日期格式示例。
 
+### `web`
+
+启动网页版可视化界面进行时间戳转换。
+
+**选项：**
+- `-p, --port <端口>` — Web 服务器端口号（默认：`3000`）
+- `-n, --no-open` — 不自动打开浏览器
+
+**示例：**
+```bash
+nodetools web                    # 使用默认端口启动网页版（3000）
+nodetools web --port 8080        # 使用自定义端口
+nodetools web --no-open          # 仅启动服务器，不打开浏览器
+```
+
+**功能特点：**
+- 可视化时间戳 ↔ 日期转换
+- 实时显示当前时间戳
+- 时区选择
+- 时间差计算器
+- 一键复制结果
+
+**使用方法：**
+```bash
+nodetools web
+# 输出：✅ Web interface is running at: http://localhost:3000
+# 浏览器将自动打开
+```
+
 ## 支持的日期格式
 
 使用 `--format` 指定自定义格式时，请使用 dayjs 格式令牌：
@@ -262,6 +291,8 @@ node_tool/
 │   ├── converters.js       # 核心转换函数
 │   ├── formatters.js       # 输出格式化函数
 │   └── utils.js            # 工具函数 & 验证
+├── web/
+│   └── index.html          # 网页版界面（可视化工具）
 ├── package.json            # 项目元数据和依赖
 ├── README.md               # 英文文档
 └── README_zh.md            # 中文文档

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳转换工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .result-label {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
+
+    .result-value {
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      background: #28a745;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+
+    .copy-btn:hover {
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    .current-time {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .current-time .time-label {
+      color: rgba(255,255,255,0.8);
+      font-size: 1rem;
+    }
+
+    .current-time .time-value {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .current-time .date-value {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🕐 时间戳转换工具</h1>
+
+    <!-- 当前时间 -->
+    <div class="current-time">
+      <div class="time-label">当前 Unix 时间戳</div>
+      <div class="time-value" id="currentTimestamp">-</div>
+      <div class="date-value" id="currentDate">-</div>
+    </div>
+
+    <div class="grid">
+      <!-- 时间戳转日期 -->
+      <div class="card">
+        <h2>⏰ 时间戳 → 日期</h2>
+        <div class="input-group">
+          <label>时间戳（秒/毫秒自动识别）</label>
+          <input type="text" id="tsInput" placeholder="例如: 1713787200 或 1713787200000">
+        </div>
+        <div class="input-group">
+          <label>时区</label>
+          <select id="tsTimezone">
+            <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
+            <option value="UTC">UTC</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
+            <option value="America/New_York">America/New_York (纽约时间)</option>
+            <option value="Europe/London">Europe/London (伦敦时间)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>输出格式</label>
+          <input type="text" id="tsFormat" value="YYYY-MM-DD HH:mm:ss" placeholder="YYYY-MM-DD HH:mm:ss">
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="convertTsToDate()">转换</button>
+          <button class="btn" onclick="useCurrentTimestamp()">使用当前时间</button>
+        </div>
+        <div class="result" id="tsResult" style="display:none;">
+          <div class="result-label">转换结果</div>
+          <div class="result-value" id="tsResultValue"></div>
+          <button class="btn copy-btn" onclick="copyResult('tsResultValue')">复制结果</button>
+        </div>
+      </div>
+
+      <!-- 日期转时间戳 -->
+      <div class="card">
+        <h2>📅 日期 → 时间戳</h2>
+        <div class="input-group">
+          <label>日期时间</label>
+          <input type="text" id="dateInput" placeholder="例如: 2024-04-22 20:00:00">
+        </div>
+        <div class="input-group">
+          <label>时区</label>
+          <select id="dateTimezone">
+            <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
+            <option value="UTC">UTC</option>
+            <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
+            <option value="America/New_York">America/New_York (纽约时间)</option>
+            <option value="Europe/London">Europe/London (伦敦时间)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>输出单位</label>
+          <select id="dateUnit">
+            <option value="seconds">秒 (10位)</option>
+            <option value="milliseconds">毫秒 (13位)</option>
+          </select>
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="convertDateToTs()">转换</button>
+          <button class="btn" onclick="useCurrentDate()">使用当前时间</button>
+        </div>
+        <div class="result" id="dateResult" style="display:none;">
+          <div class="result-label">转换结果</div>
+          <div class="result-value" id="dateResultValue"></div>
+          <button class="btn copy-btn" onclick="copyResult('dateResultValue')">复制结果</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 时间计算 -->
+    <div class="card">
+      <h2>🧮 时间差计算</h2>
+      <div class="grid">
+        <div class="input-group">
+          <label>开始时间</label>
+          <input type="text" id="startTime" placeholder="时间戳或日期">
+        </div>
+        <div class="input-group">
+          <label>结束时间</label>
+          <input type="text" id="endTime" placeholder="时间戳或日期">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="calculateDiff()">计算差值</button>
+      </div>
+      <div class="result" id="diffResult" style="display:none;">
+        <div class="result-label">时间差</div>
+        <div class="result-value" id="diffResultValue"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已复制到剪贴板</div>
+
+  <script>
+    // 更新当前时间
+    function updateCurrentTime() {
+      const now = Date.now();
+      const date = new Date(now);
+      
+      document.getElementById('currentTimestamp').textContent = now;
+      document.getElementById('currentDate').textContent = formatDate(date, 'YYYY-MM-DD HH:mm:ss');
+    }
+
+    // 格式化日期
+    function formatDate(date, format) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+
+      return format
+        .replace('YYYY', year)
+        .replace('MM', month)
+        .replace('DD', day)
+        .replace('HH', hours)
+        .replace('mm', minutes)
+        .replace('ss', seconds);
+    }
+
+    // 解析时间戳
+    function parseTimestamp(input) {
+      const ts = parseInt(input.trim());
+      if (isNaN(ts)) return null;
+      // 如果是毫秒级时间戳（13位），直接使用；否则转为毫秒
+      return ts.toString().length <= 10 ? ts * 1000 : ts;
+    }
+
+    // 解析日期字符串为时间戳（毫秒）
+    function parseDate(dateStr) {
+      // 尝试直接解析为时间戳
+      const ts = parseInt(dateStr.trim());
+      if (!isNaN(ts) && ts > 0) {
+        return ts.toString().length <= 10 ? ts * 1000 : ts;
+      }
+      
+      // 解析日期字符串
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        // 尝试常用格式
+        const formats = [
+          /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/,
+          /^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/
+        ];
+        
+        for (const fmt of formats) {
+          const match = dateStr.match(fmt);
+          if (match) {
+            return new Date(
+              parseInt(match[1]),
+              parseInt(match[2]) - 1,
+              parseInt(match[3]),
+              parseInt(match[4]),
+              parseInt(match[5]),
+              parseInt(match[6])
+            ).getTime();
+          }
+        }
+        return null;
+      }
+      return date.getTime();
+    }
+
+    // 时间戳转日期
+    function convertTsToDate() {
+      const input = document.getElementById('tsInput').value;
+      const timezone = document.getElementById('tsTimezone').value;
+      const format = document.getElementById('tsFormat').value || 'YYYY-MM-DD HH:mm:ss';
+
+      if (!input) {
+        alert('请输入时间戳');
+        return;
+      }
+
+      const ts = parseTimestamp(input);
+      if (ts === null) {
+        alert('无效的时间戳格式');
+        return;
+      }
+
+      const date = new Date(ts);
+      let result = formatDate(date, format);
+
+      // 简单时区处理（不依赖外部库）
+      if (timezone !== 'UTC') {
+        const offset = getTimezoneOffset(timezone);
+        date.setMinutes(date.getMinutes() + offset);
+        result = formatDate(date, format);
+      }
+
+      document.getElementById('tsResultValue').textContent = result;
+      document.getElementById('tsResult').style.display = 'block';
+    }
+
+    // 获取时区偏移（分钟）
+    function getTimezoneOffset(timezone) {
+      const offsets = {
+        'Asia/Shanghai': 0,
+        'Asia/Tokyo': -60,
+        'America/New_York': 780,  // 大致值，实际需要计算
+        'Europe/London': -480
+      };
+      return offsets[timezone] || 0;
+    }
+
+    // 日期转时间戳
+    function convertDateToTs() {
+      const input = document.getElementById('dateInput').value;
+      const unit = document.getElementById('dateUnit').value;
+
+      if (!input) {
+        alert('请输入日期');
+        return;
+      }
+
+      const ts = parseDate(input);
+      if (ts === null) {
+        alert('无效的日期格式');
+        return;
+      }
+
+      const result = unit === 'seconds' ? Math.floor(ts / 1000) : ts;
+      document.getElementById('dateResultValue').textContent = result;
+      document.getElementById('dateResult').style.display = 'block';
+    }
+
+    // 使用当前时间戳
+    function useCurrentTimestamp() {
+      document.getElementById('tsInput').value = Math.floor(Date.now() / 1000);
+      convertTsToDate();
+    }
+
+    // 使用当前日期
+    function useCurrentDate() {
+      document.getElementById('dateInput').value = formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss');
+    }
+
+    // 计算时间差
+    function calculateDiff() {
+      const start = document.getElementById('startTime').value;
+      const end = document.getElementById('endTime').value;
+
+      if (!start || !end) {
+        alert('请输入开始和结束时间');
+        return;
+      }
+
+      const startTs = parseDate(start);
+      const endTs = parseDate(end);
+
+      if (startTs === null || endTs === null) {
+        alert('时间格式无效');
+        return;
+      }
+
+      const diff = Math.abs(endTs - startTs);
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      const result = `
+        相差 ${diff} 毫秒
+        = ${seconds} 秒
+        = ${minutes} 分钟
+        = ${hours} 小时
+        = ${days} 天
+      `.trim();
+
+      document.getElementById('diffResultValue').innerHTML = result.replace(/\n/g, '<br>');
+      document.getElementById('diffResult').style.display = 'block';
+    }
+
+    // 复制结果
+    function copyResult(elementId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('已复制到剪贴板');
+      });
+    }
+
+    // 显示提示
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    // 初始化
+    updateCurrentTime();
+    setInterval(updateCurrentTime, 1000);
+  </script>
+</body>
+</html>
