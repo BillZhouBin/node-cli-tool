@@ -10,6 +10,8 @@ A simple yet powerful CLI tool for converting between Unix timestamps and human-
 - 📊 **Dual unit support** - Handle both seconds and milliseconds timestamps
 - ✨ **Auto-detection** - Automatically detects timestamp format (seconds/milliseconds)
 - 🎯 **Simple API** - Intuitive command-line interface
+- 🌐 **Web Interface** - Visual timestamp conversion with browser-based UI
+- 📋 **JSON Tools** - Format/minify JSON with syntax validation
 
 ## Installation
 
@@ -251,6 +253,25 @@ nodetools web
 # Output: ✅ Web interface is running at: http://localhost:3000
 # Browser will open automatically
 ```
+
+### Web Interface Features
+
+The web interface includes:
+
+1. **Timestamp ↔ Date Conversion**
+   - Real-time current timestamp display
+   - Timezone selection
+   - Custom format support
+
+2. **Time Difference Calculator**
+   - Calculate time differences between two timestamps
+
+3. **JSON Tools** (New!)
+   - JSON beautify (pretty print with indentation)
+   - JSON minify (compress)
+   - Syntax validation with error messages
+   - One-click copy and swap
+   - Input/output swap functionality
 
 ## Supported Date Formats
 

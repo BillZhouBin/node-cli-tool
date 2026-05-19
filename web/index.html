@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>时间戳转换工具</title>
+  <title>开发者工具箱 - 时间戳转换 & JSON 格式化</title>
   <style>
     * {
       margin: 0;
@@ -187,11 +187,68 @@
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
+
+    /* JSON 工具样式 */
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .json-error {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .json-success {
+      color: #28a745;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: 2px solid #e0e0e0;
+      background: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .tab-btn:hover {
+      border-color: #667eea;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-color: transparent;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🕐 时间戳转换工具</h1>
+    <h1>🧰 开发者工具箱</h1>
 
     <!-- 当前时间 -->
     <div class="current-time">
@@ -288,6 +345,35 @@
       <div class="result" id="diffResult" style="display:none;">
         <div class="result-label">时间差</div>
         <div class="result-value" id="diffResultValue"></div>
+      </div>
+    </div>
+
+    <!-- JSON 工具 -->
+    <div class="card">
+      <h2>📋 JSON 格式化/压缩</h2>
+      <div class="input-group">
+        <label>输入 JSON</label>
+        <textarea id="jsonInput" placeholder='粘贴或输入 JSON 内容，例如：
+{
+  "name": "张三",
+  "age": 25,
+  "skills": ["JavaScript", "Node.js"]
+}'></textarea>
+        <div id="jsonInputError" class="json-error" style="display:none;"></div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="processJson('beautify')">美化</button>
+        <button class="btn" onclick="processJson('minify')">压缩</button>
+        <button class="btn" onclick="clearJson()">清空</button>
+      </div>
+      <div class="result" id="jsonResult" style="display:none;">
+        <div class="result-label">输出结果 <span id="jsonInfo"></span></div>
+        <textarea id="jsonOutput" readonly style="background:#f8f9fa; min-height:200px;"></textarea>
+        <div id="jsonOutputError" class="json-error" style="display:none;"></div>
+        <div class="btn-group">
+          <button class="btn copy-btn" onclick="copyJsonResult()">复制结果</button>
+          <button class="btn" onclick="swapJson()">交换 ↑↓</button>
+        </div>
       </div>
     </div>
   </div>
@@ -491,6 +577,103 @@
       setTimeout(() => {
         toast.classList.remove('show');
       }, 2000);
+    }
+
+    // ========== JSON 工具函数 ==========
+
+    let currentJsonMode = 'beautify';
+
+    // 切换 JSON 模式
+    function switchJsonMode(mode) {
+      currentJsonMode = mode;
+      document.getElementById('btn-beautify').classList.toggle('active', mode === 'beautify');
+      document.getElementById('btn-minify').classList.toggle('active', mode === 'minify');
+    }
+
+    // 处理 JSON（美化或压缩）
+    function processJson(mode) {
+      const input = document.getElementById('jsonInput').value.trim();
+      const errorEl = document.getElementById('jsonInputError');
+      const outputEl = document.getElementById('jsonOutput');
+      const resultEl = document.getElementById('jsonResult');
+      const infoEl = document.getElementById('jsonInfo');
+
+      // 清除之前的错误
+      errorEl.style.display = 'none';
+
+      if (!input) {
+        errorEl.textContent = '请输入 JSON 内容';
+        errorEl.style.display = 'block';
+        resultEl.style.display = 'none';
+        return;
+      }
+
+      try {
+        // 解析 JSON
+        const parsed = JSON.parse(input);
+
+        let result;
+        let info;
+
+        if (mode === 'beautify') {
+          // 美化：缩进 2 个空格
+          result = JSON.stringify(parsed, null, 2);
+          info = `(格式化后)`;
+        } else {
+          // 压缩
+          result = JSON.stringify(parsed);
+          info = `(压缩后: ${getByteSize(result)} 字节)`;
+        }
+
+        outputEl.value = result;
+        infoEl.textContent = info;
+        resultEl.style.display = 'block';
+
+      } catch (e) {
+        // 显示解析错误
+        errorEl.textContent = 'JSON 解析错误: ' + e.message;
+        errorEl.style.display = 'block';
+        resultEl.style.display = 'none';
+      }
+    }
+
+    // 获取字节大小
+    function getByteSize(str) {
+      return new Blob([str]).size;
+    }
+
+    // 清空 JSON
+    function clearJson() {
+      document.getElementById('jsonInput').value = '';
+      document.getElementById('jsonOutput').value = '';
+      document.getElementById('jsonResult').style.display = 'none';
+      document.getElementById('jsonInputError').style.display = 'none';
+    }
+
+    // 复制 JSON 结果
+    function copyJsonResult() {
+      const output = document.getElementById('jsonOutput').value;
+      if (!output) {
+        showToast('没有可复制的内容');
+        return;
+      }
+      navigator.clipboard.writeText(output).then(() => {
+        showToast('JSON 已复制到剪贴板');
+      });
+    }
+
+    // 交换输入输出
+    function swapJson() {
+      const input = document.getElementById('jsonInput');
+      const output = document.getElementById('jsonOutput');
+      const temp = input.value;
+      input.value = output.value;
+      output.value = temp;
+
+      // 自动处理
+      if (input.value.trim()) {
+        processJson(currentJsonMode);
+      }
     }
 
     // 初始化
