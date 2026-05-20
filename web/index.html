@@ -89,6 +89,11 @@
       box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
     }
 
+    .btn.active {
+      background: #28a745;
+      box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
+    }
+
     .btn-group {
       display: flex;
       gap: 10px;
@@ -218,32 +223,6 @@
       font-size: 0.9rem;
       margin-top: 8px;
     }
-
-    .tab-nav {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .tab-btn {
-      padding: 10px 20px;
-      border: 2px solid #e0e0e0;
-      background: #fff;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 500;
-    }
-
-    .tab-btn:hover {
-      border-color: #667eea;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      border-color: transparent;
-    }
   </style>
 </head>
 <body>
@@ -345,6 +324,65 @@
       <div class="result" id="diffResult" style="display:none;">
         <div class="result-label">时间差</div>
         <div class="result-value" id="diffResultValue"></div>
+      </div>
+    </div>
+
+    <!-- 颜色工具 -->
+    <div class="card">
+      <h2>🎨 颜色值计算</h2>
+      
+      <!-- 模式1：解析色值 -->
+      <div class="input-group">
+        <label>输入色值（如 #ff000000 或 0xFF000000）</label>
+        <input type="text" id="colorInput" placeholder="#ff000000 或 0xFF000000">
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="parseColor()">解析色值</button>
+      </div>
+      <div class="result" id="colorParseResult" style="display:none;">
+        <div class="result-label">解析结果</div>
+        <div style="display:flex;align-items:center;gap:15px;">
+          <div id="colorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
+          <div>
+            <div id="colorHexValue" class="result-value"></div>
+            <div id="colorRgbaValue" style="color:#888;font-size:0.9rem;margin-top:5px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #e0e0e0;margin:20px 0;">
+
+      <!-- 模式2：色值 + 透明度值 -->
+      <h3 style="color:#555;font-size:1rem;margin-bottom:15px;">🔀 透明度转换</h3>
+      <div class="grid">
+        <div class="input-group">
+          <label>色值（如 #000000）</label>
+          <input type="text" id="baseColorInput" placeholder="#000000">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>透明度</label>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;">
+          <div class="btn-group" style="margin:0;">
+            <button class="btn" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
+            <button class="btn" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="calculateAlphaColor()">计算颜色</button>
+      </div>
+      <div class="result" id="alphaResult" style="display:none;">
+        <div class="result-label">计算结果</div>
+        <div style="display:flex;align-items:center;gap:15px;">
+          <div id="alphaColorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
+          <div>
+            <div id="alphaColorHex" class="result-value"></div>
+            <div id="alphaPercent" style="color:#28a745;font-size:0.9rem;margin-top:5px;"></div>
+          </div>
+        </div>
+        <button class="btn copy-btn" onclick="copyColorResult()">复制色值</button>
       </div>
     </div>
 
@@ -579,16 +617,142 @@
       }, 2000);
     }
 
-    // ========== JSON 工具函数 ==========
+    // ========== 颜色工具函数 ==========
 
-    let currentJsonMode = 'beautify';
+    let currentColorResult = '';
 
-    // 切换 JSON 模式
-    function switchJsonMode(mode) {
-      currentJsonMode = mode;
-      document.getElementById('btn-beautify').classList.toggle('active', mode === 'beautify');
-      document.getElementById('btn-minify').classList.toggle('active', mode === 'minify');
+    // 解析色值字符串
+    function parseColor() {
+      const input = document.getElementById('colorInput').value.trim();
+      if (!input) {
+        alert('请输入色值');
+        return;
+      }
+
+      let hex = input;
+      
+      // 处理 0x 前缀
+      if (input.toLowerCase().startsWith('0x')) {
+        hex = '#' + input.substring(2);
+      }
+
+      // 统一转大写
+      hex = hex.toUpperCase();
+
+      // 验证格式
+      if (!/^#([0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex)) {
+        alert('无效的色值格式，请输入 6 位或 8 位十六进制颜色值');
+        return;
+      }
+
+      // 解析 ARGB
+      let r, g, b, a;
+      if (hex.length === 9) {
+        // 8位: #AARRGGBB
+        a = parseInt(hex.substring(1, 3), 16);
+        r = parseInt(hex.substring(3, 5), 16);
+        g = parseInt(hex.substring(5, 7), 16);
+        b = parseInt(hex.substring(7, 9), 16);
+      } else {
+        // 6位: #RRGGBB (无透明度)
+        a = 255;
+        r = parseInt(hex.substring(1, 3), 16);
+        g = parseInt(hex.substring(3, 5), 16);
+        b = parseInt(hex.substring(7, 9), 16);
+      }
+
+      // 显示结果
+      document.getElementById('colorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+      document.getElementById('colorHexValue').textContent = hex;
+      document.getElementById('colorRgbaValue').textContent = `RGBA(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)}) | 透明度: ${Math.round((1 - a / 255) * 100)}%`;
+      document.getElementById('colorParseResult').style.display = 'block';
+
+      currentColorResult = hex;
     }
+
+    // 切换透明度输入类型
+    let currentAlphaType = 'hex';
+
+    function switchAlphaType(type) {
+      currentAlphaType = type;
+      const alphaInput = document.getElementById('alphaInput');
+      const btnHex = document.getElementById('btn-hex');
+      const btnPercent = document.getElementById('btn-percent');
+
+      btnHex.classList.toggle('active', type === 'hex');
+      btnPercent.classList.toggle('active', type === 'percent');
+
+      alphaInput.placeholder = type === 'hex' ? '1A' : '10';
+      alphaInput.value = ''; // 清空输入
+    }
+
+    // 计算带透明度的颜色
+    function calculateAlphaColor() {
+      const baseColor = document.getElementById('baseColorInput').value.trim().toUpperCase();
+      const alphaInput = document.getElementById('alphaInput').value.trim();
+      const alphaType = currentAlphaType;
+
+      if (!baseColor || !alphaInput) {
+        alert('请输入色值和透明度');
+        return;
+      }
+
+      // 验证色值
+      let hex = baseColor.startsWith('#') ? baseColor : '#' + baseColor;
+      if (!/^#([0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex)) {
+        alert('无效的色值格式');
+        return;
+      }
+
+      // 提取 RGB
+      const r = parseInt(hex.substring(1, 3), 16);
+      const g = parseInt(hex.substring(3, 5), 16);
+      const b = parseInt(hex.substring(5, 7), 16);
+
+      let alphaHex, percent;
+
+      if (alphaType === 'hex') {
+        // 16进制透明度
+        alphaHex = alphaInput.padStart(2, '0').toUpperCase();
+        if (!/^[0-9A-F]{2}$/i.test(alphaHex)) {
+          alert('16进制透明度应为 2 位字符（如 1A, FF）');
+          return;
+        }
+        percent = Math.round((parseInt(alphaHex, 16) / 255) * 100);
+      } else {
+        // 百分比透明度
+        const percentVal = parseInt(alphaInput);
+        if (isNaN(percentVal) || percentVal < 0 || percentVal > 100) {
+          alert('百分比应在 0-100 之间');
+          return;
+        }
+        percent = percentVal;
+        alphaHex = Math.round(percentVal * 255 / 100).toString(16).padStart(2, '0').toUpperCase();
+      }
+
+      // 组合 ARGB 色值
+      const result = '#' + alphaHex + hex.substring(1);
+      const resultUpper = result.toUpperCase();
+
+      // 显示结果
+      const a = parseInt(alphaHex, 16);
+      document.getElementById('alphaColorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
+      document.getElementById('alphaColorHex').textContent = resultUpper;
+      document.getElementById('alphaPercent').textContent = `透明度: ${percent}%`;
+      document.getElementById('alphaResult').style.display = 'block';
+
+      currentColorResult = resultUpper;
+    }
+
+    // 复制颜色结果
+    function copyColorResult() {
+      if (!currentColorResult) return;
+      navigator.clipboard.writeText(currentColorResult).then(() => {
+        showToast('色值已复制到剪贴板');
+      });
+    }
+
+    // ========== JSON 工具函数 ==========
 
     // 处理 JSON（美化或压缩）
     function processJson(mode) {
@@ -670,15 +834,15 @@
       input.value = output.value;
       output.value = temp;
 
-      // 自动处理
-      if (input.value.trim()) {
-        processJson(currentJsonMode);
-      }
+      // 清空输出，保持输入框内容
+      output.value = '';
+      document.getElementById('jsonResult').style.display = 'none';
     }
 
     // 初始化
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
+    switchAlphaType('hex'); // 默认激活 HEX 按钮
   </script>
 </body>
 </html>

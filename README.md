@@ -12,6 +12,7 @@ A simple yet powerful CLI tool for converting between Unix timestamps and human-
 - 🎯 **Simple API** - Intuitive command-line interface
 - 🌐 **Web Interface** - Visual timestamp conversion with browser-based UI
 - 📋 **JSON Tools** - Format/minify JSON with syntax validation
+- 🎨 **Color Tools** - Parse and calculate color values with alpha transparency
 
 ## Installation
 
@@ -272,6 +273,11 @@ The web interface includes:
    - Syntax validation with error messages
    - One-click copy and swap
    - Input/output swap functionality
+
+4. **Color Tools** (New!)
+   - Parse color values (`#ff000000` or `0xFF000000`)
+   - Calculate color with alpha transparency (hex or percentage)
+   - Display color preview and RGBA values
 
 ## Supported Date Formats
 
