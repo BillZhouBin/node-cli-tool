@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>开发者工具箱 - 时间戳转换 & JSON 格式化</title>
+  <title>开发者工具箱</title>
   <style>
     * {
       margin: 0;
@@ -23,25 +23,56 @@
       margin: 0 auto;
     }
 
-    h1 {
-      text-align: center;
-      color: #fff;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    /* 导航栏 */
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 6px;
     }
 
+    .nav-btn {
+      flex: 1;
+      max-width: 200px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    .nav-btn.active {
+      background: #fff;
+      color: #667eea;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    /* 卡片 */
     .card {
       background: #fff;
       border-radius: 16px;
       padding: 30px;
-      margin-bottom: 20px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
 
     .card h2 {
       color: #333;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       font-size: 1.3rem;
       display: flex;
       align-items: center;
@@ -49,7 +80,7 @@
     }
 
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
 
     label {
@@ -59,7 +90,7 @@
       font-weight: 500;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 12px 16px;
       border: 2px solid #e0e0e0;
@@ -68,18 +99,26 @@
       transition: border-color 0.3s;
     }
 
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 150px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
     }
 
     .btn {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: #fff;
       border: none;
-      padding: 12px 30px;
+      padding: 11px 24px;
       border-radius: 10px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -94,15 +133,24 @@
       box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
     }
 
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+    }
+
     .btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 8px;
+      flex-wrap: wrap;
     }
 
     .result {
       margin-top: 20px;
-      padding: 15px;
+      padding: 16px;
       background: #f8f9fa;
       border-radius: 10px;
       border-left: 4px solid #667eea;
@@ -123,8 +171,11 @@
 
     .copy-btn {
       background: #28a745;
-      padding: 8px 16px;
-      font-size: 0.9rem;
+      padding: 11px 24px;
+      border-radius: 10px;
+    }
+
+    .result > .copy-btn {
       margin-top: 10px;
     }
 
@@ -132,45 +183,58 @@
       box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
     }
 
+    /* 当前时间 */
     .current-time {
       text-align: center;
       padding: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
       border-radius: 16px;
       margin-bottom: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     .current-time .time-label {
-      color: rgba(255,255,255,0.8);
-      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.95rem;
     }
 
     .current-time .time-value {
       color: #fff;
       font-size: 2rem;
       font-weight: bold;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .current-time .date-value {
-      color: rgba(255,255,255,0.9);
-      font-size: 1.2rem;
+      color: rgba(255,255,255,0.85);
+      font-size: 1.1rem;
     }
 
-    .grid {
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
     }
 
     @media (max-width: 768px) {
-      .grid {
+      .grid-2 {
         grid-template-columns: 1fr;
       }
-      
+
       h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+      }
+
+      .nav {
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        max-width: none;
+        flex: 1 1 30%;
+        font-size: 0.85rem;
+        padding: 10px 14px;
       }
     }
 
@@ -186,6 +250,7 @@
       opacity: 0;
       transition: all 0.3s;
       z-index: 1000;
+      pointer-events: none;
     }
 
     .toast.show {
@@ -193,23 +258,11 @@
       opacity: 1;
     }
 
-    /* JSON 工具样式 */
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      padding: 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      resize: vertical;
-      transition: border-color 0.3s;
-    }
-
-    textarea:focus {
-      outline: none;
-      border-color: #667eea;
+    /* 分隔线 */
+    hr.divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 20px 0;
     }
 
     .json-error {
@@ -218,17 +271,26 @@
       margin-top: 8px;
     }
 
-    .json-success {
-      color: #28a745;
-      font-size: 0.9rem;
-      margin-top: 8px;
+    /* 隐藏面板 */
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* 时间转换内部的两列卡片 */
+    .time-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🧰 开发者工具箱</h1>
-
     <!-- 当前时间 -->
     <div class="current-time">
       <div class="time-label">当前 Unix 时间戳</div>
@@ -236,199 +298,223 @@
       <div class="date-value" id="currentDate">-</div>
     </div>
 
-    <div class="grid">
-      <!-- 时间戳转日期 -->
-      <div class="card">
-        <h2>⏰ 时间戳 → 日期</h2>
-        <div class="input-group">
-          <label>时间戳（秒/毫秒自动识别）</label>
-          <input type="text" id="tsInput" placeholder="例如: 1713787200 或 1713787200000">
+    <!-- 导航栏 -->
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchTool('time')" id="nav-time">⏰ 时间转换</button>
+      <button class="nav-btn" onclick="switchTool('color')" id="nav-color">🎨 颜色工具</button>
+      <button class="nav-btn" onclick="switchTool('json')" id="nav-json">📋 JSON 工具</button>
+    </nav>
+
+    <!-- ==================== 时间转换面板 ==================== -->
+    <div id="panel-time" class="panel active">
+      <div class="grid-2">
+        <!-- 时间戳 → 日期 -->
+        <div class="time-card">
+          <h2>⏰ 时间戳 → 日期</h2>
+          <div class="input-group">
+            <label>时间戳（秒/毫秒自动识别）</label>
+            <input type="text" id="tsInput" placeholder="例如: 1713787200 或 1713787200000">
+          </div>
+          <div class="input-group">
+            <label>时区</label>
+            <select id="tsTimezone">
+              <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
+              <option value="UTC">UTC</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
+              <option value="America/New_York">America/New_York (纽约时间)</option>
+              <option value="Europe/London">Europe/London (伦敦时间)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>输出格式</label>
+            <input type="text" id="tsFormat" value="YYYY-MM-DD HH:mm:ss" placeholder="YYYY-MM-DD HH:mm:ss">
+          </div>
+          <div class="btn-group">
+            <button class="btn" onclick="convertTsToDate()">转换</button>
+            <button class="btn btn-secondary" onclick="useCurrentTimestamp()">使用当前时间</button>
+          </div>
+          <div class="result" id="tsResult" style="display:none;">
+            <div class="result-label">转换结果</div>
+            <div class="result-value" id="tsResultValue"></div>
+            <button class="btn copy-btn" onclick="copyResult('tsResultValue')">复制结果</button>
+          </div>
         </div>
-        <div class="input-group">
-          <label>时区</label>
-          <select id="tsTimezone">
-            <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
-            <option value="UTC">UTC</option>
-            <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
-            <option value="America/New_York">America/New_York (纽约时间)</option>
-            <option value="Europe/London">Europe/London (伦敦时间)</option>
-          </select>
+
+        <!-- 日期 → 时间戳 -->
+        <div class="time-card">
+          <h2>📅 日期 → 时间戳</h2>
+          <div class="input-group">
+            <label>日期时间</label>
+            <input type="text" id="dateInput" placeholder="例如: 2024-04-22 20:00:00">
+          </div>
+          <div class="input-group">
+            <label>时区</label>
+            <select id="dateTimezone">
+              <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
+              <option value="UTC">UTC</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
+              <option value="America/New_York">America/New_York (纽约时间)</option>
+              <option value="Europe/London">Europe/London (伦敦时间)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>输出单位</label>
+            <select id="dateUnit">
+              <option value="seconds">秒 (10位)</option>
+              <option value="milliseconds">毫秒 (13位)</option>
+            </select>
+          </div>
+          <div class="btn-group">
+            <button class="btn" onclick="convertDateToTs()">转换</button>
+            <button class="btn btn-secondary" onclick="useCurrentDate()">使用当前时间</button>
+          </div>
+          <div class="result" id="dateResult" style="display:none;">
+            <div class="result-label">转换结果</div>
+            <div class="result-value" id="dateResultValue"></div>
+            <button class="btn copy-btn" onclick="copyResult('dateResultValue')">复制结果</button>
+          </div>
         </div>
-        <div class="input-group">
-          <label>输出格式</label>
-          <input type="text" id="tsFormat" value="YYYY-MM-DD HH:mm:ss" placeholder="YYYY-MM-DD HH:mm:ss">
+      </div>
+
+      <!-- 时间差计算 -->
+      <div class="time-card" style="margin-top:20px;">
+        <h2>🧮 时间差计算</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label>开始时间</label>
+            <input type="text" id="startTime" placeholder="时间戳或日期">
+          </div>
+          <div class="input-group">
+            <label>结束时间</label>
+            <input type="text" id="endTime" placeholder="时间戳或日期">
+          </div>
         </div>
         <div class="btn-group">
-          <button class="btn" onclick="convertTsToDate()">转换</button>
-          <button class="btn" onclick="useCurrentTimestamp()">使用当前时间</button>
+          <button class="btn" onclick="calculateDiff()">计算差值</button>
         </div>
-        <div class="result" id="tsResult" style="display:none;">
-          <div class="result-label">转换结果</div>
-          <div class="result-value" id="tsResultValue"></div>
-          <button class="btn copy-btn" onclick="copyResult('tsResultValue')">复制结果</button>
+        <div class="result" id="diffResult" style="display:none;">
+          <div class="result-label">时间差</div>
+          <div class="result-value" id="diffResultValue"></div>
         </div>
       </div>
+    </div>
 
-      <!-- 日期转时间戳 -->
+    <!-- ==================== 颜色工具面板 ==================== -->
+    <div id="panel-color" class="panel">
       <div class="card">
-        <h2>📅 日期 → 时间戳</h2>
+        <h2>🎨 颜色值计算</h2>
+
+        <!-- 解析色值 -->
         <div class="input-group">
-          <label>日期时间</label>
-          <input type="text" id="dateInput" placeholder="例如: 2024-04-22 20:00:00">
-        </div>
-        <div class="input-group">
-          <label>时区</label>
-          <select id="dateTimezone">
-            <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
-            <option value="UTC">UTC</option>
-            <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
-            <option value="America/New_York">America/New_York (纽约时间)</option>
-            <option value="Europe/London">Europe/London (伦敦时间)</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>输出单位</label>
-          <select id="dateUnit">
-            <option value="seconds">秒 (10位)</option>
-            <option value="milliseconds">毫秒 (13位)</option>
-          </select>
+          <label>输入色值（如 #ff000000 或 0xFF000000）</label>
+          <input type="text" id="colorInput" placeholder="#ff000000 或 0xFF000000">
         </div>
         <div class="btn-group">
-          <button class="btn" onclick="convertDateToTs()">转换</button>
-          <button class="btn" onclick="useCurrentDate()">使用当前时间</button>
+          <button class="btn" onclick="parseColor()">解析色值</button>
         </div>
-        <div class="result" id="dateResult" style="display:none;">
-          <div class="result-label">转换结果</div>
-          <div class="result-value" id="dateResultValue"></div>
-          <button class="btn copy-btn" onclick="copyResult('dateResultValue')">复制结果</button>
+        <div class="result" id="colorParseResult" style="display:none;">
+          <div class="result-label">解析结果</div>
+          <div style="display:flex;align-items:center;gap:15px;">
+            <div id="colorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
+            <div>
+              <div id="colorHexValue" class="result-value"></div>
+              <div id="colorRgbaValue" style="color:#888;font-size:0.9rem;margin-top:5px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- 透明度转换 -->
+        <h3 style="color:#555;font-size:1rem;margin-bottom:15px;">🔀 透明度转换</h3>
+        <div class="grid-2">
+          <div class="input-group">
+            <label>色值（如 #000000）</label>
+            <input type="text" id="baseColorInput" placeholder="#000000">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>透明度</label>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;">
+            <div class="btn-group" style="margin:0;">
+              <button class="btn" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
+              <button class="btn" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
+            </div>
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn" onclick="calculateAlphaColor()">计算颜色</button>
+        </div>
+        <div class="result" id="alphaResult" style="display:none;">
+          <div class="result-label">计算结果</div>
+          <div style="display:flex;align-items:center;gap:15px;">
+            <div id="alphaColorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
+            <div>
+              <div id="alphaColorHex" class="result-value"></div>
+              <div id="alphaPercent" style="color:#28a745;font-size:0.9rem;margin-top:5px;"></div>
+            </div>
+          </div>
+          <button class="btn copy-btn" onclick="copyColorResult()">复制色值</button>
         </div>
       </div>
     </div>
 
-    <!-- 时间计算 -->
-    <div class="card">
-      <h2>🧮 时间差计算</h2>
-      <div class="grid">
+    <!-- ==================== JSON 工具面板 ==================== -->
+    <div id="panel-json" class="panel">
+      <div class="card">
+        <h2>📋 JSON 格式化 / 压缩</h2>
         <div class="input-group">
-          <label>开始时间</label>
-          <input type="text" id="startTime" placeholder="时间戳或日期">
-        </div>
-        <div class="input-group">
-          <label>结束时间</label>
-          <input type="text" id="endTime" placeholder="时间戳或日期">
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn" onclick="calculateDiff()">计算差值</button>
-      </div>
-      <div class="result" id="diffResult" style="display:none;">
-        <div class="result-label">时间差</div>
-        <div class="result-value" id="diffResultValue"></div>
-      </div>
-    </div>
-
-    <!-- 颜色工具 -->
-    <div class="card">
-      <h2>🎨 颜色值计算</h2>
-      
-      <!-- 模式1：解析色值 -->
-      <div class="input-group">
-        <label>输入色值（如 #ff000000 或 0xFF000000）</label>
-        <input type="text" id="colorInput" placeholder="#ff000000 或 0xFF000000">
-      </div>
-      <div class="btn-group">
-        <button class="btn" onclick="parseColor()">解析色值</button>
-      </div>
-      <div class="result" id="colorParseResult" style="display:none;">
-        <div class="result-label">解析结果</div>
-        <div style="display:flex;align-items:center;gap:15px;">
-          <div id="colorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
-          <div>
-            <div id="colorHexValue" class="result-value"></div>
-            <div id="colorRgbaValue" style="color:#888;font-size:0.9rem;margin-top:5px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <hr style="border:none;border-top:1px solid #e0e0e0;margin:20px 0;">
-
-      <!-- 模式2：色值 + 透明度值 -->
-      <h3 style="color:#555;font-size:1rem;margin-bottom:15px;">🔀 透明度转换</h3>
-      <div class="grid">
-        <div class="input-group">
-          <label>色值（如 #000000）</label>
-          <input type="text" id="baseColorInput" placeholder="#000000">
-        </div>
-      </div>
-      <div class="input-group">
-        <label>透明度</label>
-        <div style="display:flex;gap:10px;align-items:center;">
-          <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;">
-          <div class="btn-group" style="margin:0;">
-            <button class="btn" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
-            <button class="btn" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
-          </div>
-        </div>
-      </div>
-      <div class="btn-group">
-        <button class="btn" onclick="calculateAlphaColor()">计算颜色</button>
-      </div>
-      <div class="result" id="alphaResult" style="display:none;">
-        <div class="result-label">计算结果</div>
-        <div style="display:flex;align-items:center;gap:15px;">
-          <div id="alphaColorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
-          <div>
-            <div id="alphaColorHex" class="result-value"></div>
-            <div id="alphaPercent" style="color:#28a745;font-size:0.9rem;margin-top:5px;"></div>
-          </div>
-        </div>
-        <button class="btn copy-btn" onclick="copyColorResult()">复制色值</button>
-      </div>
-    </div>
-
-    <!-- JSON 工具 -->
-    <div class="card">
-      <h2>📋 JSON 格式化/压缩</h2>
-      <div class="input-group">
-        <label>输入 JSON</label>
-        <textarea id="jsonInput" placeholder='粘贴或输入 JSON 内容，例如：
+          <label>输入 JSON</label>
+          <textarea id="jsonInput" placeholder='粘贴或输入 JSON 内容，例如：
 {
   "name": "张三",
   "age": 25,
   "skills": ["JavaScript", "Node.js"]
 }'></textarea>
-        <div id="jsonInputError" class="json-error" style="display:none;"></div>
-      </div>
-      <div class="btn-group">
-        <button class="btn" onclick="processJson('beautify')">美化</button>
-        <button class="btn" onclick="processJson('minify')">压缩</button>
-        <button class="btn" onclick="clearJson()">清空</button>
-      </div>
-      <div class="result" id="jsonResult" style="display:none;">
-        <div class="result-label">输出结果 <span id="jsonInfo"></span></div>
-        <textarea id="jsonOutput" readonly style="background:#f8f9fa; min-height:200px;"></textarea>
-        <div id="jsonOutputError" class="json-error" style="display:none;"></div>
+          <div id="jsonInputError" class="json-error" style="display:none;"></div>
+        </div>
         <div class="btn-group">
-          <button class="btn copy-btn" onclick="copyJsonResult()">复制结果</button>
-          <button class="btn" onclick="swapJson()">交换 ↑↓</button>
+          <button class="btn" onclick="processJson('beautify')">美化</button>
+          <button class="btn" onclick="processJson('minify')">压缩</button>
+          <button class="btn btn-secondary" onclick="clearJson()">清空</button>
+        </div>
+        <div class="result" id="jsonResult" style="display:none;">
+          <div class="result-label">输出结果 <span id="jsonInfo"></span></div>
+          <textarea id="jsonOutput" readonly style="background:#f8f9fa; min-height:200px;"></textarea>
+          <div id="jsonOutputError" class="json-error" style="display:none;"></div>
+          <div class="btn-group">
+            <button class="btn copy-btn" onclick="copyJsonResult()">复制结果</button>
+            <button class="btn btn-secondary" onclick="swapJson()">交换</button>
+          </div>
         </div>
       </div>
     </div>
+
   </div>
 
   <div class="toast" id="toast">已复制到剪贴板</div>
 
   <script>
-    // 更新当前时间
+    // ========== 面板切换 ==========
+    function switchTool(tool) {
+      // 切换导航按钮状态
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('nav-' + tool).classList.add('active');
+
+      // 切换面板显示
+      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+      document.getElementById('panel-' + tool).classList.add('active');
+    }
+
+    // ========== 时间工具 ==========
     function updateCurrentTime() {
       const now = Date.now();
       const date = new Date(now);
-      
       document.getElementById('currentTimestamp').textContent = now;
       document.getElementById('currentDate').textContent = formatDate(date, 'YYYY-MM-DD HH:mm:ss');
     }
 
-    // 格式化日期
     function formatDate(date, format) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -446,41 +532,31 @@
         .replace('ss', seconds);
     }
 
-    // 解析时间戳
     function parseTimestamp(input) {
       const ts = parseInt(input.trim());
       if (isNaN(ts)) return null;
-      // 如果是毫秒级时间戳（13位），直接使用；否则转为毫秒
       return ts.toString().length <= 10 ? ts * 1000 : ts;
     }
 
-    // 解析日期字符串为时间戳（毫秒）
     function parseDate(dateStr) {
-      // 尝试直接解析为时间戳
       const ts = parseInt(dateStr.trim());
       if (!isNaN(ts) && ts > 0) {
         return ts.toString().length <= 10 ? ts * 1000 : ts;
       }
-      
-      // 解析日期字符串
+
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) {
-        // 尝试常用格式
         const formats = [
           /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/,
           /^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/
         ];
-        
         for (const fmt of formats) {
           const match = dateStr.match(fmt);
           if (match) {
             return new Date(
-              parseInt(match[1]),
-              parseInt(match[2]) - 1,
-              parseInt(match[3]),
-              parseInt(match[4]),
-              parseInt(match[5]),
-              parseInt(match[6])
+              parseInt(match[1]), parseInt(match[2]) - 1,
+              parseInt(match[3]), parseInt(match[4]),
+              parseInt(match[5]), parseInt(match[6])
             ).getTime();
           }
         }
@@ -489,27 +565,19 @@
       return date.getTime();
     }
 
-    // 时间戳转日期
     function convertTsToDate() {
       const input = document.getElementById('tsInput').value;
       const timezone = document.getElementById('tsTimezone').value;
       const format = document.getElementById('tsFormat').value || 'YYYY-MM-DD HH:mm:ss';
 
-      if (!input) {
-        alert('请输入时间戳');
-        return;
-      }
+      if (!input) { alert('请输入时间戳'); return; }
 
       const ts = parseTimestamp(input);
-      if (ts === null) {
-        alert('无效的时间戳格式');
-        return;
-      }
+      if (ts === null) { alert('无效的时间戳格式'); return; }
 
       const date = new Date(ts);
       let result = formatDate(date, format);
 
-      // 简单时区处理（不依赖外部库）
       if (timezone !== 'UTC') {
         const offset = getTimezoneOffset(timezone);
         date.setMinutes(date.getMinutes() + offset);
@@ -520,66 +588,49 @@
       document.getElementById('tsResult').style.display = 'block';
     }
 
-    // 获取时区偏移（分钟）
     function getTimezoneOffset(timezone) {
       const offsets = {
         'Asia/Shanghai': 0,
         'Asia/Tokyo': -60,
-        'America/New_York': 780,  // 大致值，实际需要计算
+        'America/New_York': 780,
         'Europe/London': -480
       };
       return offsets[timezone] || 0;
     }
 
-    // 日期转时间戳
     function convertDateToTs() {
       const input = document.getElementById('dateInput').value;
       const unit = document.getElementById('dateUnit').value;
 
-      if (!input) {
-        alert('请输入日期');
-        return;
-      }
+      if (!input) { alert('请输入日期'); return; }
 
       const ts = parseDate(input);
-      if (ts === null) {
-        alert('无效的日期格式');
-        return;
-      }
+      if (ts === null) { alert('无效的日期格式'); return; }
 
       const result = unit === 'seconds' ? Math.floor(ts / 1000) : ts;
       document.getElementById('dateResultValue').textContent = result;
       document.getElementById('dateResult').style.display = 'block';
     }
 
-    // 使用当前时间戳
     function useCurrentTimestamp() {
       document.getElementById('tsInput').value = Math.floor(Date.now() / 1000);
       convertTsToDate();
     }
 
-    // 使用当前日期
     function useCurrentDate() {
       document.getElementById('dateInput').value = formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss');
     }
 
-    // 计算时间差
     function calculateDiff() {
       const start = document.getElementById('startTime').value;
       const end = document.getElementById('endTime').value;
 
-      if (!start || !end) {
-        alert('请输入开始和结束时间');
-        return;
-      }
+      if (!start || !end) { alert('请输入开始和结束时间'); return; }
 
       const startTs = parseDate(start);
       const endTs = parseDate(end);
 
-      if (startTs === null || endTs === null) {
-        alert('时间格式无效');
-        return;
-      }
+      if (startTs === null || endTs === null) { alert('时间格式无效'); return; }
 
       const diff = Math.abs(endTs - startTs);
       const seconds = Math.floor(diff / 1000);
@@ -587,91 +638,49 @@
       const hours = Math.floor(minutes / 60);
       const days = Math.floor(hours / 24);
 
-      const result = `
-        相差 ${diff} 毫秒
-        = ${seconds} 秒
-        = ${minutes} 分钟
-        = ${hours} 小时
-        = ${days} 天
-      `.trim();
-
-      document.getElementById('diffResultValue').innerHTML = result.replace(/\n/g, '<br>');
+      const result = `相差 ${diff} 毫秒 = ${seconds} 秒 = ${minutes} 分钟 = ${hours} 小时 = ${days} 天`;
+      document.getElementById('diffResultValue').innerHTML = result.replace(/ = /g, '<br>= ');
       document.getElementById('diffResult').style.display = 'block';
     }
 
-    // 复制结果
-    function copyResult(elementId) {
-      const text = document.getElementById(elementId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('已复制到剪贴板');
-      });
-    }
-
-    // 显示提示
-    function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2000);
-    }
-
-    // ========== 颜色工具函数 ==========
-
+    // ========== 颜色工具 ==========
     let currentColorResult = '';
+    let currentAlphaType = 'hex';
 
-    // 解析色值字符串
     function parseColor() {
       const input = document.getElementById('colorInput').value.trim();
-      if (!input) {
-        alert('请输入色值');
-        return;
-      }
+      if (!input) { alert('请输入色值'); return; }
 
       let hex = input;
-      
-      // 处理 0x 前缀
       if (input.toLowerCase().startsWith('0x')) {
         hex = '#' + input.substring(2);
       }
-
-      // 统一转大写
       hex = hex.toUpperCase();
 
-      // 验证格式
       if (!/^#([0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex)) {
         alert('无效的色值格式，请输入 6 位或 8 位十六进制颜色值');
         return;
       }
 
-      // 解析 ARGB
       let r, g, b, a;
       if (hex.length === 9) {
-        // 8位: #AARRGGBB
         a = parseInt(hex.substring(1, 3), 16);
         r = parseInt(hex.substring(3, 5), 16);
         g = parseInt(hex.substring(5, 7), 16);
         b = parseInt(hex.substring(7, 9), 16);
       } else {
-        // 6位: #RRGGBB (无透明度)
         a = 255;
         r = parseInt(hex.substring(1, 3), 16);
         g = parseInt(hex.substring(3, 5), 16);
-        b = parseInt(hex.substring(7, 9), 16);
+        b = parseInt(hex.substring(5, 7), 16);
       }
 
-      // 显示结果
       document.getElementById('colorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
       document.getElementById('colorHexValue').textContent = hex;
       document.getElementById('colorRgbaValue').textContent = `RGBA(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)}) | 透明度: ${Math.round((1 - a / 255) * 100)}%`;
       document.getElementById('colorParseResult').style.display = 'block';
-
       currentColorResult = hex;
     }
-
-    // 切换透明度输入类型
-    let currentAlphaType = 'hex';
 
     function switchAlphaType(type) {
       currentAlphaType = type;
@@ -683,36 +692,28 @@
       btnPercent.classList.toggle('active', type === 'percent');
 
       alphaInput.placeholder = type === 'hex' ? '1A' : '10';
-      alphaInput.value = ''; // 清空输入
+      alphaInput.value = '';
     }
 
-    // 计算带透明度的颜色
     function calculateAlphaColor() {
       const baseColor = document.getElementById('baseColorInput').value.trim().toUpperCase();
       const alphaInput = document.getElementById('alphaInput').value.trim();
-      const alphaType = currentAlphaType;
 
-      if (!baseColor || !alphaInput) {
-        alert('请输入色值和透明度');
-        return;
-      }
+      if (!baseColor || !alphaInput) { alert('请输入色值和透明度'); return; }
 
-      // 验证色值
       let hex = baseColor.startsWith('#') ? baseColor : '#' + baseColor;
       if (!/^#([0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex)) {
         alert('无效的色值格式');
         return;
       }
 
-      // 提取 RGB
       const r = parseInt(hex.substring(1, 3), 16);
       const g = parseInt(hex.substring(3, 5), 16);
       const b = parseInt(hex.substring(5, 7), 16);
 
       let alphaHex, percent;
 
-      if (alphaType === 'hex') {
-        // 16进制透明度
+      if (currentAlphaType === 'hex') {
         alphaHex = alphaInput.padStart(2, '0').toUpperCase();
         if (!/^[0-9A-F]{2}$/i.test(alphaHex)) {
           alert('16进制透明度应为 2 位字符（如 1A, FF）');
@@ -720,7 +721,6 @@
         }
         percent = Math.round((parseInt(alphaHex, 16) / 255) * 100);
       } else {
-        // 百分比透明度
         const percentVal = parseInt(alphaInput);
         if (isNaN(percentVal) || percentVal < 0 || percentVal > 100) {
           alert('百分比应在 0-100 之间');
@@ -730,12 +730,10 @@
         alphaHex = Math.round(percentVal * 255 / 100).toString(16).padStart(2, '0').toUpperCase();
       }
 
-      // 组合 ARGB 色值
       const result = '#' + alphaHex + hex.substring(1);
       const resultUpper = result.toUpperCase();
-
-      // 显示结果
       const a = parseInt(alphaHex, 16);
+
       document.getElementById('alphaColorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
       document.getElementById('alphaColorHex').textContent = resultUpper;
       document.getElementById('alphaPercent').textContent = `透明度: ${percent}%`;
@@ -744,7 +742,6 @@
       currentColorResult = resultUpper;
     }
 
-    // 复制颜色结果
     function copyColorResult() {
       if (!currentColorResult) return;
       navigator.clipboard.writeText(currentColorResult).then(() => {
@@ -752,9 +749,7 @@
       });
     }
 
-    // ========== JSON 工具函数 ==========
-
-    // 处理 JSON（美化或压缩）
+    // ========== JSON 工具 ==========
     function processJson(mode) {
       const input = document.getElementById('jsonInput').value.trim();
       const errorEl = document.getElementById('jsonInputError');
@@ -762,7 +757,6 @@
       const resultEl = document.getElementById('jsonResult');
       const infoEl = document.getElementById('jsonInfo');
 
-      // 清除之前的错误
       errorEl.style.display = 'none';
 
       if (!input) {
@@ -773,40 +767,27 @@
       }
 
       try {
-        // 解析 JSON
         const parsed = JSON.parse(input);
-
-        let result;
-        let info;
+        let result, info;
 
         if (mode === 'beautify') {
-          // 美化：缩进 2 个空格
           result = JSON.stringify(parsed, null, 2);
-          info = `(格式化后)`;
+          info = '(格式化后)';
         } else {
-          // 压缩
           result = JSON.stringify(parsed);
-          info = `(压缩后: ${getByteSize(result)} 字节)`;
+          info = `(压缩后: ${new Blob([result]).size} 字节)`;
         }
 
         outputEl.value = result;
         infoEl.textContent = info;
         resultEl.style.display = 'block';
-
       } catch (e) {
-        // 显示解析错误
         errorEl.textContent = 'JSON 解析错误: ' + e.message;
         errorEl.style.display = 'block';
         resultEl.style.display = 'none';
       }
     }
 
-    // 获取字节大小
-    function getByteSize(str) {
-      return new Blob([str]).size;
-    }
-
-    // 清空 JSON
     function clearJson() {
       document.getElementById('jsonInput').value = '';
       document.getElementById('jsonOutput').value = '';
@@ -814,35 +795,42 @@
       document.getElementById('jsonInputError').style.display = 'none';
     }
 
-    // 复制 JSON 结果
     function copyJsonResult() {
       const output = document.getElementById('jsonOutput').value;
-      if (!output) {
-        showToast('没有可复制的内容');
-        return;
-      }
+      if (!output) { showToast('没有可复制的内容'); return; }
       navigator.clipboard.writeText(output).then(() => {
         showToast('JSON 已复制到剪贴板');
       });
     }
 
-    // 交换输入输出
     function swapJson() {
       const input = document.getElementById('jsonInput');
       const output = document.getElementById('jsonOutput');
       const temp = input.value;
       input.value = output.value;
-      output.value = temp;
-
-      // 清空输出，保持输入框内容
       output.value = '';
       document.getElementById('jsonResult').style.display = 'none';
+    }
+
+    // ========== 通用 ==========
+    function copyResult(elementId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('已复制到剪贴板');
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     // 初始化
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
-    switchAlphaType('hex'); // 默认激活 HEX 按钮
+    switchAlphaType('hex');
   </script>
 </body>
 </html>
