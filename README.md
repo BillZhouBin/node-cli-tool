@@ -266,6 +266,12 @@ The web interface includes:
 
 2. **Time Difference Calculator**
    - Calculate time differences between two timestamps
+   - Supported input formats:
+     - **Unix timestamps**: `1713787200` (seconds) or `1713787200000` (milliseconds)
+     - **Date-only**: `2025-12-21`
+     - **Date + time**: `2024-04-22 20:00:00`
+     - **Slash format**: `2024/04/22 20:00:00`
+     - **ISO 8601**: `2025-05-21T10:30:00`
 
 3. **JSON Tools** (New!)
    - JSON beautify (pretty print with indentation)

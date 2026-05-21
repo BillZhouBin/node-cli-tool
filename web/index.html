@@ -293,8 +293,8 @@
   <div class="container">
     <!-- 当前时间 -->
     <div class="current-time">
-      <div class="time-label">当前 Unix 时间戳</div>
-      <div class="time-value" id="currentTimestamp">-</div>
+      <div class="time-label">当前 Unix 时间戳（点击复制）</div>
+      <div class="time-value" id="currentTimestamp" onclick="copyTimestamp()" title="点击复制" style="cursor:pointer;">-</div>
       <div class="date-value" id="currentDate">-</div>
     </div>
 
@@ -539,30 +539,37 @@
     }
 
     function parseDate(dateStr) {
-      const ts = parseInt(dateStr.trim());
-      if (!isNaN(ts) && ts > 0) {
-        return ts.toString().length <= 10 ? ts * 1000 : ts;
+      const s = dateStr.trim();
+
+      // 纯数字 → 当作时间戳
+      if (/^\d+$/.test(s)) {
+        const ts = parseInt(s);
+        if (ts > 0) {
+          return s.length <= 10 ? ts * 1000 : ts;
+        }
       }
 
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) {
-        const formats = [
-          /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/,
-          /^(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/
-        ];
-        for (const fmt of formats) {
-          const match = dateStr.match(fmt);
-          if (match) {
-            return new Date(
-              parseInt(match[1]), parseInt(match[2]) - 1,
-              parseInt(match[3]), parseInt(match[4]),
-              parseInt(match[5]), parseInt(match[6])
-            ).getTime();
-          }
+      // 先用正则匹配标准日期格式（确保本地时间解析正确）
+      const patterns = [
+        /^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2}))?$/,
+        /^(\d{4})\/(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2}))?$/
+      ];
+      for (const p of patterns) {
+        const m = s.match(p);
+        if (m) {
+          return new Date(
+            parseInt(m[1]), parseInt(m[2]) - 1,
+            parseInt(m[3]),
+            m[4] ? parseInt(m[4]) : 0,
+            m[5] ? parseInt(m[5]) : 0,
+            m[6] ? parseInt(m[6]) : 0
+          ).getTime();
         }
-        return null;
       }
-      return date.getTime();
+
+      // 最后尝试浏览器原生解析
+      const date = new Date(s);
+      return isNaN(date.getTime()) ? null : date.getTime();
     }
 
     function convertTsToDate() {
@@ -813,6 +820,14 @@
     }
 
     // ========== 通用 ==========
+    function copyTimestamp() {
+      const ts = document.getElementById('currentTimestamp').textContent;
+      if (ts === '-') return;
+      navigator.clipboard.writeText(ts).then(() => {
+        showToast('时间戳已复制: ' + ts);
+      });
+    }
+
     function copyResult(elementId) {
       const text = document.getElementById(elementId).textContent;
       navigator.clipboard.writeText(text).then(() => {
