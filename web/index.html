@@ -128,6 +128,22 @@
       box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
     }
 
+    .btn-toggle {
+      background: #e9ecef;
+      color: #666;
+    }
+
+    .btn-toggle:hover {
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-toggle.active {
+      background: #28a745;
+      color: #fff;
+      box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
+    }
+
     .btn.active {
       background: #28a745;
       box-shadow: 0 3px 15px rgba(40, 167, 69, 0.4);
@@ -438,8 +454,8 @@
           <div style="display:flex;gap:10px;align-items:center;">
             <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;">
             <div class="btn-group" style="margin:0;">
-              <button class="btn" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
-              <button class="btn" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
+              <button class="btn btn-toggle" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
+              <button class="btn btn-toggle" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
             </div>
           </div>
         </div>
@@ -684,12 +700,13 @@
 
       document.getElementById('colorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
       document.getElementById('colorHexValue').textContent = hex;
-      document.getElementById('colorRgbaValue').textContent = `RGBA(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)}) | 透明度: ${Math.round((1 - a / 255) * 100)}%`;
+      document.getElementById('colorRgbaValue').textContent = `RGBA(${r}, ${g}, ${b}, ${(a / 255).toFixed(2)}) | 不透明度: ${Math.round(a / 255 * 100)}%`;
       document.getElementById('colorParseResult').style.display = 'block';
       currentColorResult = hex;
     }
 
     function switchAlphaType(type) {
+      const prevType = currentAlphaType;
       currentAlphaType = type;
       const alphaInput = document.getElementById('alphaInput');
       const btnHex = document.getElementById('btn-hex');
@@ -699,7 +716,31 @@
       btnPercent.classList.toggle('active', type === 'percent');
 
       alphaInput.placeholder = type === 'hex' ? '1A' : '10';
-      alphaInput.value = '';
+
+      // 如果用户已输入有效值，切换时自动转换
+      const val = alphaInput.value.trim();
+      if (val && prevType !== type) {
+        if (type === 'hex' && prevType === 'percent') {
+          // 百分比 → HEX
+          const p = parseInt(val);
+          if (!isNaN(p) && p >= 0 && p <= 100) {
+            alphaInput.value = Math.round(p * 255 / 100).toString(16).toUpperCase().padStart(2, '0');
+            return;
+          }
+        } else if (type === 'percent' && prevType === 'hex') {
+          // HEX → 百分比
+          if (/^[0-9A-F]{1,2}$/i.test(val)) {
+            const hex = parseInt(val, 16);
+            alphaInput.value = Math.round(hex / 255 * 100);
+            return;
+          }
+        }
+      }
+
+      // 无有效值或首次加载 → 清空
+      if (!val) {
+        alphaInput.value = '';
+      }
     }
 
     function calculateAlphaColor() {
@@ -743,7 +784,7 @@
 
       document.getElementById('alphaColorPreview').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
       document.getElementById('alphaColorHex').textContent = resultUpper;
-      document.getElementById('alphaPercent').textContent = `透明度: ${percent}%`;
+      document.getElementById('alphaPercent').textContent = `不透明度: ${percent}%`;
       document.getElementById('alphaResult').style.display = 'block';
 
       currentColorResult = resultUpper;
