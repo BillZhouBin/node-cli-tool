@@ -284,7 +284,400 @@
     .json-error {
       color: #dc3545;
       font-size: 0.9rem;
-      margin-top: 8px;
+    }
+
+    /* JSON 折叠视图 */
+    .json-fold-view {
+      flex: 1;
+      min-height: 0;
+      background: #fafafa;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      overflow: auto;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 12px 0;
+      display: none;
+      color: #333;
+    }
+
+    .json-fold-view.active {
+      display: block;
+    }
+
+    .json-fold-line {
+      display: flex;
+      align-items: baseline;
+      padding: 0 12px;
+      white-space: pre;
+      cursor: default;
+    }
+
+    .json-fold-line:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .json-fold-line-num {
+      display: inline-block;
+      min-width: 38px;
+      text-align: right;
+      padding-right: 14px;
+      margin-right: 8px;
+      color: #999;
+      font-size: 12px;
+      user-select: none;
+      flex-shrink: 0;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .json-fold-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      cursor: default;
+      color: #aaa;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-right: 4px;
+      user-select: none;
+      border-radius: 3px;
+      transition: all 0.15s;
+      visibility: hidden;
+    }
+
+    .json-fold-toggle.can-fold {
+      visibility: visible;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .json-fold-toggle.can-fold:hover {
+      color: #333;
+      background: rgba(0,0,0,0.06);
+    }
+
+    .json-fold-line.hidden {
+      display: none;
+    }
+
+    #jsonInput.hidden-by-fold {
+      display: none;
+    }
+
+    .json-fold-collapsed-hint {
+      color: #6a9955;
+      margin-left: 20px;
+    }
+
+    /* 带行号的编辑器（编辑模式） */
+    .lined-editor {
+      display: none;
+      flex: 1;
+      min-height: 0;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+
+    .lined-editor.active {
+      display: flex;
+    }
+
+    .lined-editor:focus-within {
+      border-color: #667eea;
+    }
+
+    .lined-editor-numbers {
+      flex-shrink: 0;
+      width: 52px;
+      overflow: hidden;
+      padding: 12px 0;
+      background: #f0f0f0;
+      border-right: 1px solid #e0e0e0;
+      text-align: right;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #999;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .lined-editor-numbers span {
+      display: block;
+      padding-right: 14px;
+    }
+
+    .lined-editor-textarea {
+      flex: 1;
+      min-height: 0;
+      padding: 12px 15px;
+      border: none;
+      outline: none;
+      resize: none;
+      background: #fafafa;
+      color: #333;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow: auto;
+      border-radius: 0 10px 10px 0;
+      -webkit-text-fill-color: #333;
+      caret-color: #333;
+    }
+
+    .lined-editor-textarea::placeholder {
+      color: #aaa;
+    }
+
+    /* ===== 暗色主题覆盖 ===== */
+    .json-fold-view.theme-dark {
+      background: #1e1e1e;
+      border-color: #333;
+      color: #d4d4d4;
+    }
+
+    .json-fold-view.theme-dark .json-fold-line:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .json-fold-view.theme-dark .json-fold-line-num {
+      color: #555;
+      border-right-color: #333;
+    }
+
+    .json-fold-view.theme-dark .json-fold-toggle.can-fold {
+      color: #999;
+    }
+
+    .json-fold-view.theme-dark .json-fold-toggle.can-fold:hover {
+      color: #ccc;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .lined-editor.theme-dark {
+      background: #1e1e1e;
+      border-color: #333;
+    }
+
+    .lined-editor.theme-dark:focus-within {
+      border-color: #667eea;
+    }
+
+    .lined-editor.theme-dark .lined-editor-numbers {
+      background: #1a1a1a;
+      border-right-color: #333;
+      color: #555;
+    }
+
+    .lined-editor.theme-dark .lined-editor-textarea {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      -webkit-text-fill-color: #d4d4d4;
+      caret-color: #fff;
+    }
+
+    .lined-editor.theme-dark .lined-editor-textarea::placeholder {
+      color: #555;
+    }
+
+    /* 主题切换按钮 */
+    .theme-toggle-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 3px 8px;
+      font-size: 0.95rem;
+      color: #888;
+      transition: all 0.2s;
+      vertical-align: middle;
+      margin-left: 4px;
+      line-height: 1;
+    }
+
+    .theme-toggle-btn:hover {
+      color: #333;
+      border-color: #aaa;
+    }
+
+    /* ===== #jsonInput textarea 亮色默认 + 暗色主题 ===== */
+    #jsonInput {
+      background: #fafafa;
+      color: #333;
+      border-color: #ddd;
+      -webkit-text-fill-color: #333;
+      caret-color: #333;
+    }
+
+    #jsonInput::placeholder {
+      color: #aaa;
+    }
+
+    #jsonInput:focus {
+      border-color: #667eea;
+    }
+
+    #jsonInput.theme-dark {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-color: #333;
+      -webkit-text-fill-color: #d4d4d4;
+      caret-color: #fff;
+    }
+
+    #jsonInput.theme-dark::placeholder {
+      color: #555;
+    }
+
+    #jsonInput.theme-dark:focus {
+      border-color: #667eea;
+    }
+
+    /* ===== 全屏 overlay 亮色默认 + 暗色主题 ===== */
+    .fullscreen-overlay {
+      background: #fafafa;
+    }
+
+    .fullscreen-overlay .fullscreen-header {
+      color: #333;
+    }
+
+    .fullscreen-overlay textarea {
+      background: #fafafa;
+      color: #333;
+      border-color: #ddd;
+      -webkit-text-fill-color: #333;
+      caret-color: #333;
+    }
+
+    .fullscreen-overlay .fullscreen-close {
+      color: #666;
+    }
+
+    .fullscreen-overlay .fullscreen-close:hover { color: #333; }
+
+    .fullscreen-overlay.theme-dark {
+      background: #1e1e1e;
+    }
+
+    .fullscreen-overlay.theme-dark .fullscreen-header {
+      color: #d4d4d4;
+    }
+
+    .fullscreen-overlay.theme-dark textarea {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-color: #333;
+      -webkit-text-fill-color: #d4d4d4;
+      caret-color: #fff;
+    }
+
+    .fullscreen-overlay.theme-dark .fullscreen-close {
+      color: #aaa;
+    }
+
+    .fullscreen-overlay.theme-dark .fullscreen-close:hover { color: #d4d4d4; }
+
+    /* JSON 面板撑满视口 */
+    #panel-json.active {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 220px);
+      min-height: 400px;
+    }
+
+    #panel-json.active .card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #panel-json .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #panel-json .card-body .input-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #panel-json .card-body .input-group textarea {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* 全屏 */
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      padding: 15px 25px;
+    }
+
+    .fullscreen-overlay textarea {
+      flex: 1;
+      min-height: 0;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 15px;
+      line-height: 1.6;
+      border-radius: 10px;
+      padding: 15px;
+      resize: none;
+    }
+
+    .fullscreen-overlay textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .fullscreen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .fullscreen-close {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      padding: 0 8px;
+      line-height: 1;
+    }
+
+    .fullscreen-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 4px 10px;
+      font-size: 1.1rem;
+      color: #888;
+      transition: color 0.2s, border-color 0.2s;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+
+    .fullscreen-btn:hover {
+      color: #333;
+      border-color: #aaa;
     }
 
     /* 隐藏面板 */
@@ -479,30 +872,38 @@
     <!-- ==================== JSON 工具面板 ==================== -->
     <div id="panel-json" class="panel">
       <div class="card">
-        <h2>📋 JSON 格式化 / 压缩</h2>
+        <h2 style="display:flex;align-items:center;justify-content:space-between;">
+          <span>📋 JSON 格式化 / 压缩</span>
+          <span>
+            <button id="jsonThemeBtn" class="theme-toggle-btn" onclick="toggleJsonTheme()" title="切换亮色/暗色主题">☀️</button>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏编辑">⛶</button>
+          </span>
+        </h2>
+        <div class="btn-group" style="margin-bottom:12px;">
+          <button class="btn" onclick="processJson('beautify')">美化</button>
+          <button class="btn" onclick="processJson('minify')">压缩</button>
+          <button class="btn copy-btn" onclick="copyJsonInput()">复制</button>
+          <button class="btn btn-secondary" onclick="clearJson()">清空</button>
+          <button class="btn btn-secondary" id="btnEditFold" style="display:none;" onclick="toggleEditMode()">编辑</button>
+        </div>
+        <div class="card-body">
         <div class="input-group">
-          <label>输入 JSON</label>
+          <label style="display:flex;align-items:center;gap:10px;">输入 JSON
+            <span id="jsonStatus" style="color:#888;font-size:0.85rem;display:none;font-weight:400;"></span>
+            <span id="jsonInputError" class="json-error" style="display:none;font-weight:400;margin:0;"></span>
+          </label>
           <textarea id="jsonInput" placeholder='粘贴或输入 JSON 内容，例如：
 {
   "name": "张三",
   "age": 25,
   "skills": ["JavaScript", "Node.js"]
 }'></textarea>
-          <div id="jsonInputError" class="json-error" style="display:none;"></div>
-        </div>
-        <div class="btn-group">
-          <button class="btn" onclick="processJson('beautify')">美化</button>
-          <button class="btn" onclick="processJson('minify')">压缩</button>
-          <button class="btn btn-secondary" onclick="clearJson()">清空</button>
-        </div>
-        <div class="result" id="jsonResult" style="display:none;">
-          <div class="result-label">输出结果 <span id="jsonInfo"></span></div>
-          <textarea id="jsonOutput" readonly style="background:#f8f9fa; min-height:200px;"></textarea>
-          <div id="jsonOutputError" class="json-error" style="display:none;"></div>
-          <div class="btn-group">
-            <button class="btn copy-btn" onclick="copyJsonResult()">复制结果</button>
-            <button class="btn btn-secondary" onclick="swapJson()">交换</button>
+          <div id="jsonFoldedView" class="json-fold-view"></div>
+          <div id="jsonLinedEditor" class="lined-editor">
+            <div class="lined-editor-numbers" id="linedEditorNumbers"></div>
+            <textarea id="jsonLinedTextarea" class="lined-editor-textarea" spellcheck="false" placeholder="粘贴或输入 JSON 内容..."></textarea>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -798,66 +1199,412 @@
     }
 
     // ========== JSON 工具 ==========
+    let foldPairs = {};          // openLine -> closeLine
+    let collapsedFolds = new Set();
+    let isFoldViewActive = false;
+    let beautifiedJsonText = '';
+
     function processJson(mode) {
-      const input = document.getElementById('jsonInput').value.trim();
+      const inputEl = document.getElementById('jsonInput');
+      const linedEditor = document.getElementById('jsonLinedEditor');
+      const input = isLinedEditActive
+        ? document.getElementById('jsonLinedTextarea').value.trim()
+        : inputEl.value.trim();
       const errorEl = document.getElementById('jsonInputError');
-      const outputEl = document.getElementById('jsonOutput');
-      const resultEl = document.getElementById('jsonResult');
-      const infoEl = document.getElementById('jsonInfo');
+      const statusEl = document.getElementById('jsonStatus');
 
       errorEl.style.display = 'none';
+      statusEl.style.display = 'none';
 
       if (!input) {
         errorEl.textContent = '请输入 JSON 内容';
         errorEl.style.display = 'block';
-        resultEl.style.display = 'none';
         return;
       }
 
       try {
         const parsed = JSON.parse(input);
-        let result, info;
+        let result, msg;
 
         if (mode === 'beautify') {
           result = JSON.stringify(parsed, null, 2);
-          info = '(格式化后)';
+          msg = '✓ 已美化 — 点击 ▼ 折叠';
+
+          inputEl.value = result;
+          beautifiedJsonText = result;
+          // 退出编辑模式进入折叠视图
+          hideLinedEditor();
+          showFoldView(result);
         } else {
           result = JSON.stringify(parsed);
-          info = `(压缩后: ${new Blob([result]).size} 字节)`;
+          msg = `✓ 已压缩 (${new Blob([result]).size} 字节)`;
+
+          // 如果在编辑模式，更新编辑区；否则更新 textarea
+          if (isLinedEditActive) {
+            document.getElementById('jsonLinedTextarea').value = result;
+            updateLinedNumbers();
+          } else {
+            inputEl.value = result;
+          }
+          hideFoldView();
         }
 
-        outputEl.value = result;
-        infoEl.textContent = info;
-        resultEl.style.display = 'block';
+        statusEl.textContent = msg;
+        statusEl.style.color = '#28a745';
+        statusEl.style.display = 'block';
       } catch (e) {
-        errorEl.textContent = 'JSON 解析错误: ' + e.message;
+        const posMatch = e.message.match(/position\s+(\d+)/);
+        let errMsg = 'JSON 解析错误: ' + e.message;
+        if (posMatch && input.length > parseInt(posMatch[1])) {
+          // position 指的是期望字符的位置，往前找到最后一个有意义的字符位置
+          let pos = Math.max(0, parseInt(posMatch[1]) - 1);
+          while (pos > 0 && /\s/.test(input[pos])) pos--;
+          const actualLine = input.substring(0, pos + 1).split('\n').length;
+          errMsg = `JSON 解析错误: 第 ${actualLine} 行 — ${e.message.replace(/at position \d+ \(line \d+ column \d+\)/, '').trim()}`;
+        }
+        errorEl.textContent = errMsg;
         errorEl.style.display = 'block';
-        resultEl.style.display = 'none';
       }
     }
 
-    function clearJson() {
-      document.getElementById('jsonInput').value = '';
-      document.getElementById('jsonOutput').value = '';
-      document.getElementById('jsonResult').style.display = 'none';
-      document.getElementById('jsonInputError').style.display = 'none';
+    function showFoldView(jsonStr) {
+      const foldView = document.getElementById('jsonFoldedView');
+      const inputEl = document.getElementById('jsonInput');
+      const linedEditor = document.getElementById('jsonLinedEditor');
+      const editBtn = document.getElementById('btnEditFold');
+
+      collapsedFolds.clear();
+      foldPairs = findFoldPairs(jsonStr);
+      isFoldViewActive = true;
+      isLinedEditActive = false;
+
+      foldView.innerHTML = buildFoldHtml(jsonStr);
+      foldView.classList.add('active');
+      inputEl.classList.add('hidden-by-fold');
+      linedEditor.classList.remove('active');
+      editBtn.style.display = 'inline-block';
+      editBtn.textContent = '编辑';
+      applyTheme();
     }
 
-    function copyJsonResult() {
-      const output = document.getElementById('jsonOutput').value;
-      if (!output) { showToast('没有可复制的内容'); return; }
-      navigator.clipboard.writeText(output).then(() => {
+    function hideFoldView() {
+      const foldView = document.getElementById('jsonFoldedView');
+      const inputEl = document.getElementById('jsonInput');
+      const editBtn = document.getElementById('btnEditFold');
+
+      isFoldViewActive = false;
+      collapsedFolds.clear();
+      foldPairs = {};
+      foldView.classList.remove('active');
+      foldView.innerHTML = '';
+      inputEl.classList.remove('hidden-by-fold');
+      editBtn.style.display = 'none';
+    }
+
+    let isLinedEditActive = false;
+
+    function showLinedEditor(text) {
+      const linedEditor = document.getElementById('jsonLinedEditor');
+      const linedTextarea = document.getElementById('jsonLinedTextarea');
+      const editBtn = document.getElementById('btnEditFold');
+      const inputEl = document.getElementById('jsonInput');
+
+      linedTextarea.value = text;
+      linedEditor.classList.add('active');
+      inputEl.classList.add('hidden-by-fold');
+      isLinedEditActive = true;
+      editBtn.style.display = 'inline-block';
+      editBtn.textContent = '折叠视图';
+      updateLinedNumbers();
+      applyTheme();
+      linedTextarea.focus();
+    }
+
+    function hideLinedEditor() {
+      const linedEditor = document.getElementById('jsonLinedEditor');
+      linedEditor.classList.remove('active');
+      isLinedEditActive = false;
+    }
+
+    function updateLinedNumbers() {
+      const textarea = document.getElementById('jsonLinedTextarea');
+      const numbersEl = document.getElementById('linedEditorNumbers');
+      const lines = textarea.value.split('\n');
+      let html = '';
+      for (let i = 0; i < lines.length; i++) {
+        html += `<span>${i + 1}</span>`;
+      }
+      numbersEl.innerHTML = html;
+    }
+
+    function syncLinedScroll() {
+      const textarea = document.getElementById('jsonLinedTextarea');
+      const numbersEl = document.getElementById('linedEditorNumbers');
+      numbersEl.scrollTop = textarea.scrollTop;
+    }
+
+    // 初始化 lined editor 事件
+    (function initLinedEditor() {
+      const textarea = document.getElementById('jsonLinedTextarea');
+      textarea.addEventListener('input', updateLinedNumbers);
+      textarea.addEventListener('scroll', syncLinedScroll);
+    })();
+
+    function toggleEditMode() {
+      const editBtn = document.getElementById('btnEditFold');
+
+      if (isFoldViewActive) {
+        // 折叠视图 → 编辑模式
+        isFoldViewActive = false;
+        const foldView = document.getElementById('jsonFoldedView');
+        collapsedFolds.clear();
+        foldPairs = {};
+        foldView.classList.remove('active');
+        foldView.innerHTML = '';
+        showLinedEditor(beautifiedJsonText);
+      } else if (isLinedEditActive) {
+        // 编辑模式 → 折叠视图
+        const linedTextarea = document.getElementById('jsonLinedTextarea');
+        beautifiedJsonText = linedTextarea.value;
+        try {
+          JSON.parse(beautifiedJsonText);
+          hideLinedEditor();
+          showFoldView(beautifiedJsonText);
+        } catch (e) {
+          alert('JSON 格式无效，无法切换折叠视图');
+        }
+      }
+    }
+
+    function copyJsonInput() {
+      let text;
+      if (isLinedEditActive) {
+        text = document.getElementById('jsonLinedTextarea').value.trim();
+      } else if (isFoldViewActive) {
+        text = beautifiedJsonText;
+      } else {
+        text = document.getElementById('jsonInput').value.trim();
+      }
+      if (!text) { showToast('没有可复制的内容'); return; }
+      navigator.clipboard.writeText(text).then(() => {
         showToast('JSON 已复制到剪贴板');
       });
     }
 
-    function swapJson() {
-      const input = document.getElementById('jsonInput');
-      const output = document.getElementById('jsonOutput');
-      const temp = input.value;
-      input.value = output.value;
-      output.value = '';
-      document.getElementById('jsonResult').style.display = 'none';
+    function toggleFullscreen() {
+      const textarea = document.getElementById('jsonInput');
+      const existing = document.querySelector('.fullscreen-overlay');
+      
+      if (existing) {
+        // 退出全屏：把内容写回
+        const fsTextarea = existing.querySelector('textarea');
+        const content = fsTextarea.value;
+        existing.remove();
+
+        if (isLinedEditActive) {
+          document.getElementById('jsonLinedTextarea').value = content;
+          updateLinedNumbers();
+        } else {
+          textarea.value = content;
+        }
+
+        if (isFoldViewActive) {
+          beautifiedJsonText = content;
+          try {
+            JSON.parse(beautifiedJsonText);
+            showFoldView(beautifiedJsonText);
+          } catch (e) {
+            hideFoldView();
+          }
+        }
+        textarea.focus();
+        return;
+      }
+
+      // 进入全屏
+      let currentText;
+      if (isLinedEditActive) {
+        currentText = document.getElementById('jsonLinedTextarea').value;
+      } else if (isFoldViewActive) {
+        currentText = beautifiedJsonText;
+      } else {
+        currentText = textarea.value;
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'fullscreen-overlay' + (jsonTheme === 'dark' ? ' theme-dark' : '');
+      overlay.innerHTML = `
+        <div class="fullscreen-header">
+          <span>📋 JSON 全屏编辑</span>
+          <button class="fullscreen-close" onclick="toggleFullscreen()">&times;</button>
+        </div>
+        <textarea>${escapeHtml(currentText)}</textarea>
+      `;
+      document.body.appendChild(overlay);
+
+      const fsTextarea = overlay.querySelector('textarea');
+      fsTextarea.focus();
+
+      const escHandler = (e) => {
+        if (e.key === 'Escape') { toggleFullscreen(); }
+      };
+      document.addEventListener('keydown', escHandler, { once: true });
+    }
+
+    function clearJson() {
+      hideFoldView();
+      hideLinedEditor();
+      document.getElementById('jsonInput').value = '';
+      document.getElementById('jsonLinedTextarea').value = '';
+      updateLinedNumbers();
+      document.getElementById('jsonInputError').style.display = 'none';
+      document.getElementById('jsonStatus').style.display = 'none';
+      beautifiedJsonText = '';
+      isLinedEditActive = false;
+    }
+
+    function findFoldPairs(jsonStr) {
+      const lines = jsonStr.split('\n');
+
+      // 构建每行的起始字符位置映射
+      const lineStarts = [];
+      let pos = 0;
+      for (let i = 0; i < lines.length; i++) {
+        lineStarts.push(pos);
+        pos += lines[i].length + 1; // +1 for \n
+      }
+
+      function lineForCharPos(charPos) {
+        // 二分查找
+        let lo = 0, hi = lineStarts.length - 1;
+        while (lo < hi) {
+          const mid = Math.ceil((lo + hi) / 2);
+          if (lineStarts[mid] <= charPos) lo = mid;
+          else hi = mid - 1;
+        }
+        return lo;
+      }
+
+      const stack = [];   // { char: '{'|'[', pos: number }
+      const pairs = {};   // openLine -> closeLine
+
+      for (let i = 0; i < jsonStr.length; i++) {
+        const ch = jsonStr[i];
+        if (ch === '{' || ch === '[') {
+          stack.push({ char: ch, pos: i });
+        } else if (ch === '}' || ch === ']') {
+          if (stack.length === 0) continue;
+          const opener = stack.pop();
+          if ((opener.char === '{' && ch === '}') || (opener.char === '[' && ch === ']')) {
+            const openLine = lineForCharPos(opener.pos);
+            const closeLine = lineForCharPos(i);
+            if (openLine !== closeLine) {
+              pairs[openLine] = closeLine;
+            }
+          }
+        }
+      }
+
+      return pairs;
+    }
+
+    function buildFoldHtml(jsonStr) {
+      const lines = jsonStr.split('\n');
+      let html = '';
+
+      for (let i = 0; i < lines.length; i++) {
+        const isFoldable = foldPairs[i] !== undefined;
+        const hidden = isLineHiddenByFold(i);
+
+        html += `<div class="json-fold-line${hidden ? ' hidden' : ''}${isFoldable ? ' foldable' : ''}" data-line="${i}">`;
+        html += `<span class="json-fold-line-num">${i + 1}</span>`;
+        html += `<span class="json-fold-toggle${isFoldable ? ' can-fold' : ''}" data-open="${i}">▼</span>`;
+        html += `<span class="json-fold-content">${escapeHtml(lines[i])}</span>`;
+        html += `</div>`;
+      }
+
+      return html;
+    }
+
+    function isLineHiddenByFold(lineIndex) {
+      for (const openLine of collapsedFolds) {
+        const closeLine = foldPairs[openLine];
+        if (lineIndex > openLine && lineIndex <= closeLine) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // 委托点击事件到 fold view
+    document.addEventListener('click', function(e) {
+      const toggle = e.target.closest('.json-fold-toggle.can-fold');
+      if (!toggle) return;
+
+      const openLine = parseInt(toggle.dataset.open);
+      const closeLine = foldPairs[openLine];
+      if (closeLine === undefined) return;
+
+      const isCollapsed = collapsedFolds.has(openLine);
+
+      if (isCollapsed) {
+        // 展开
+        collapsedFolds.delete(openLine);
+        toggle.textContent = '▼';
+      } else {
+        // 折叠
+        collapsedFolds.add(openLine);
+        toggle.textContent = '▶';
+      }
+
+      // 更新受影响范围内所有行的可见性
+      const foldView = document.getElementById('jsonFoldedView');
+      for (let i = openLine + 1; i <= closeLine; i++) {
+        const lineEl = foldView.querySelector(`.json-fold-line[data-line="${i}"]`);
+        if (!lineEl) continue;
+        const hidden = isLineHiddenByFold(i);
+        lineEl.classList.toggle('hidden', hidden);
+        // 同步内部折叠图标的文字
+        const innerToggle = lineEl.querySelector('.json-fold-toggle.can-fold');
+        if (innerToggle && !hidden) {
+          const innerOpen = parseInt(innerToggle.dataset.open);
+          innerToggle.textContent = collapsedFolds.has(innerOpen) ? '▶' : '▼';
+        }
+      }
+    });
+
+    // ========== JSON 主题切换 ==========
+    let jsonTheme = 'light';  // 'light' | 'dark'
+
+    function applyTheme() {
+      const isDark = jsonTheme === 'dark';
+      const foldView = document.getElementById('jsonFoldedView');
+      const linedEditor = document.getElementById('jsonLinedEditor');
+      const jsonInput = document.getElementById('jsonInput');
+      const themeBtn = document.getElementById('jsonThemeBtn');
+
+      foldView.classList.toggle('theme-dark', isDark);
+      linedEditor.classList.toggle('theme-dark', isDark);
+      jsonInput.classList.toggle('theme-dark', isDark);
+      themeBtn.textContent = isDark ? '🌙' : '☀️';
+      themeBtn.title = isDark ? '切换亮色主题' : '切换暗色主题';
+
+      // 全屏 overlay 也要响应主题
+      const fsOverlay = document.querySelector('.fullscreen-overlay');
+      if (fsOverlay) {
+        fsOverlay.classList.toggle('theme-dark', isDark);
+      }
+
+      try { localStorage.setItem('jsonTheme', jsonTheme); } catch(e) {}
+    }
+
+    function toggleJsonTheme() {
+      jsonTheme = jsonTheme === 'light' ? 'dark' : 'light';
+      applyTheme();
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     // ========== 通用 ==========
@@ -887,6 +1634,8 @@
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
     switchAlphaType('hex');
+
+    applyTheme();
   </script>
 </body>
 </html>
