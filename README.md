@@ -6,12 +6,12 @@ A simple yet powerful CLI tool for converting between Unix timestamps and human-
 
 - ⚡ **Fast conversion** - Instantly convert timestamps ↔ dates
 - 🛠️ **Flexible formats** - Support multiple date formats (YYYY-MM-DD, DD/MM/YYYY, etc.)
-- 🌍 **Timezone support** - Convert timestamps with timezone awareness
+- 🌍 **Timezone support** - IANA city names and UTC+8/GMT+2 offset format support
 - 📊 **Dual unit support** - Handle both seconds and milliseconds timestamps
 - ✨ **Auto-detection** - Automatically detects timestamp format (seconds/milliseconds)
 - 🎯 **Simple API** - Intuitive command-line interface
 - 🌐 **Web Interface** - Visual timestamp conversion with browser-based UI
-- 📋 **JSON Tools** - Format/minify JSON with syntax validation
+- 📋 **JSON Tools** - Format/minify JSON with fold view, line numbers, theme toggle
 - 🎨 **Color Tools** - Parse and calculate color values with alpha transparency
 
 ## Installation
@@ -273,12 +273,16 @@ The web interface includes:
      - **Slash format**: `2024/04/22 20:00:00`
      - **ISO 8601**: `2025-05-21T10:30:00`
 
-3. **JSON Tools** (New!)
+3. **JSON Tools**
    - JSON beautify (pretty print with indentation)
    - JSON minify (compress)
-   - Syntax validation with error messages
-   - One-click copy and swap
-   - Input/output swap functionality
+   - Code folding for `{}` and `[]` ranges after beautify
+   - Line numbers for easy error location
+   - Fold view ↔ edit mode toggle
+   - Syntax validation with line-level error messages
+   - Light/dark theme toggle
+   - Fullscreen editing mode
+   - One-click copy and clear
 
 4. **Color Tools** (New!)
    - Parse color values (`#ff000000` or `0xFF000000`)
@@ -304,13 +308,35 @@ See [dayjs documentation](https://day.js.org/docs/en/display/format) for more fo
 
 ## Supported Timezones
 
-Common timezones include:
-- `UTC` — UTC/GMT
-- `Asia/Shanghai` — China Standard Time (default)
-- `Asia/Tokyo` — Japan Standard Time
-- `America/New_York` — Eastern Time
-- `Europe/London` — UK Time
-- `Australia/Sydney` — Australian Eastern Time
+Three timezone formats are supported:
+
+### 1. IANA City Names (Recommended)
+
+| Timezone | Description |
+|----------|-------------|
+| `Asia/Shanghai` | China Standard Time (default) |
+| `UTC` | Coordinated Universal Time |
+| `Asia/Tokyo` | Japan Standard Time |
+| `America/New_York` | US Eastern Time |
+| `Europe/London` | UK Time |
+| `Australia/Sydney` | Australian Eastern Time |
+
+### 2. UTC/GMT Offset Format
+
+Use offset directly for convenience:
+
+```bash
+node bin/cli.js ts2date 1713787200 -z UTC+8   # UTC+8 (Beijing time)
+node bin/cli.js ts2date 1713787200 -z UTC+2   # UTC+2
+node bin/cli.js ts2date 1713787200 -z UTC-5   # UTC-5 (New York time)
+node bin/cli.js ts2date 1713787200 -z GMT+8   # Same as UTC+8
+```
+
+### 3. Etc/GMT Format
+
+```bash
+node bin/cli.js ts2date 1713787200 -z Etc/GMT-8  # Note: sign is reversed
+```
 
 For a complete list, see [IANA timezone database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
