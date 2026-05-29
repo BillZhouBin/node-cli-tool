@@ -11,6 +11,31 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 /**
+ * 将 UTC+2/GMT-5 等偏移格式转为 IANA Etc/GMT 时区名
+ * dayjs timezone 插件只识别 IANA 时区名，不直接支持 UTC+2 格式
+ * 注意：Etc/GMT 的符号与常规相反（POSIX 标准），东2区是 Etc/GMT-2
+ * @param {string} tz - 时区字符串
+ * @returns {string} 转换后的时区名
+ */
+function normalizeTimezone(tz) {
+  // 匹配 UTC+2, UTC-5, GMT+8, GMT-3 等格式
+  const match = tz.match(/^(UTC|GMT)([+-])(\d{1,2})(?::(\d{2}))?$/i);
+  if (match) {
+    const offset = parseInt(match[3]);
+    const minutes = match[4] ? parseInt(match[4]) : 0;
+    // Etc/GMT 符号相反
+    const sign = match[2] === '+' ? '-' : '+';
+    const totalHours = offset + minutes / 60;
+    return `Etc/GMT${sign}${totalHours}`;
+  }
+  // 也支持 Etc/GMT+2 直传（符号反的）
+  if (/^Etc\/(GMT|UTC)[+-]\d+$/i.test(tz)) {
+    return tz.replace(/^etc\//i, 'Etc/').replace(/utc/i, 'GMT');
+  }
+  return tz;
+}
+
+/**
  * 时间戳转日期
  * @param {string|number} timestamp - 时间戳（秒级或毫秒级）
  * @param {object} options - 选项
@@ -33,7 +58,8 @@ function timestampToDate(timestamp, options = {}) {
   
   // 转换
   try {
-    const result = dayjs(ms).tz(tz).format(format);
+    const normalizedTz = normalizeTimezone(tz);
+    const result = dayjs(ms).tz(normalizedTz).format(format);
     return result;
   } catch (err) {
     throw new Error(`Format error: ${err.message}`);
@@ -54,7 +80,8 @@ function dateToTimestamp(dateStr, options = {}) {
   
   try {
     // 使用 dayjs 解析并指定时区
-    const date = dayjs.tz(dateStr, tz);
+    const normalizedTz = normalizeTimezone(tz);
+    const date = dayjs.tz(dateStr, normalizedTz);
     
     if (!date.isValid()) {
       throw new Error(`Invalid date format: ${dateStr}`);
@@ -91,6 +118,7 @@ function getCurrentTimestamp(options = {}) {
 }
 
 module.exports = {
+  normalizeTimezone,
   timestampToDate,
   dateToTimestamp,
   getCurrentTimestamp,
