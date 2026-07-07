@@ -891,13 +891,7 @@
           </div>
           <div class="input-group">
             <label>时区</label>
-            <select id="tsTimezone">
-              <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
-              <option value="UTC">UTC</option>
-              <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
-              <option value="America/New_York">America/New_York (纽约时间)</option>
-              <option value="Europe/London">Europe/London (伦敦时间)</option>
-            </select>
+            <select id="tsTimezone"></select>
           </div>
           <div class="input-group">
             <label>输出格式</label>
@@ -923,13 +917,7 @@
           </div>
           <div class="input-group">
             <label>时区</label>
-            <select id="dateTimezone">
-              <option value="Asia/Shanghai">Asia/Shanghai (北京时间)</option>
-              <option value="UTC">UTC</option>
-              <option value="Asia/Tokyo">Asia/Tokyo (东京时间)</option>
-              <option value="America/New_York">America/New_York (纽约时间)</option>
-              <option value="Europe/London">Europe/London (伦敦时间)</option>
-            </select>
+            <select id="dateTimezone"></select>
           </div>
           <div class="input-group">
             <label>输出单位</label>
@@ -1185,9 +1173,71 @@ console.log('代码块');
       return isNaN(date.getTime()) ? null : date.getTime();
     }
 
+    // 构建所有时区选项：UTC-12 到 UTC+14
+    function buildTimezoneOptions() {
+      const popular = [
+        { label: 'UTC-12:00',            offset: -720 },
+        { label: 'UTC-11:00 美属萨摩亚',  offset: -660 },
+        { label: 'UTC-10:00 夏威夷',      offset: -600 },
+        { label: 'UTC-09:00 阿拉斯加',    offset: -540 },
+        { label: 'UTC-08:00 洛杉矶/旧金山', offset: -480 },
+        { label: 'UTC-07:00 丹佛/凤凰城',  offset: -420 },
+        { label: 'UTC-06:00 芝加哥/墨西哥城', offset: -360 },
+        { label: 'UTC-05:00 纽约/多伦多',   offset: -300 },
+        { label: 'UTC-04:00 圣地亚哥',      offset: -240 },
+        { label: 'UTC-03:00 布宜诺斯艾利斯/圣保罗', offset: -180 },
+        { label: 'UTC-02:00',            offset: -120 },
+        { label: 'UTC-01:00 亚速尔',      offset: -60 },
+        { label: 'UTC+00:00 伦敦/都柏林',  offset: 0 },
+        { label: 'UTC+01:00 巴黎/柏林/罗马', offset: 60 },
+        { label: 'UTC+02:00 开罗/雅典/赫尔辛基', offset: 120 },
+        { label: 'UTC+03:00 莫斯科/迪拜/内罗毕', offset: 180 },
+        { label: 'UTC+03:30 德黑兰',       offset: 210 },
+        { label: 'UTC+04:00 迪拜/第比利斯',  offset: 240 },
+        { label: 'UTC+04:30 喀布尔',       offset: 270 },
+        { label: 'UTC+05:00 伊斯兰堡/叶卡捷琳堡', offset: 300 },
+        { label: 'UTC+05:30 孟买/科伦坡',   offset: 330 },
+        { label: 'UTC+05:45 加德满都',      offset: 345 },
+        { label: 'UTC+06:00 达卡/阿拉木图',  offset: 360 },
+        { label: 'UTC+06:30 仰光',         offset: 390 },
+        { label: 'UTC+07:00 曼谷/雅加达',   offset: 420 },
+        { label: 'UTC+08:00 北京/上海/香港/新加坡', offset: 480 },
+        { label: 'UTC+08:45 尤克拉',        offset: 525 },
+        { label: 'UTC+09:00 东京/首尔',      offset: 540 },
+        { label: 'UTC+09:30 阿德莱德/达尔文', offset: 570 },
+        { label: 'UTC+10:00 悉尼/墨尔本',    offset: 600 },
+        { label: 'UTC+10:30 豪勋爵岛',       offset: 630 },
+        { label: 'UTC+11:00 所罗门群岛',     offset: 660 },
+        { label: 'UTC+12:00 奥克兰/斐济',    offset: 720 },
+        { label: 'UTC+12:45 查塔姆群岛',     offset: 765 },
+        { label: 'UTC+13:00 汤加/萨摩亚',    offset: 780 },
+        { label: 'UTC+14:00 莱恩群岛',       offset: 840 },
+      ];
+
+      const html = popular.map(({ label, offset }) => {
+        return `<option value="${offset}">${label}</option>`;
+      }).join('');
+
+      // 本地时区偏移（分钟）
+      const localOffset = -new Date().getTimezoneOffset();
+      const localLabel = `UTC${localOffset >= 0 ? '+' : ''}${formatOffset(localOffset)} (本地时区)`;
+      const localOption = `<option value="${localOffset}" selected>${localLabel}</option>`;
+
+      return { optionsHtml: localOption + html, localOffset };
+    }
+
+    function formatOffset(totalMinutes) {
+      const sign = totalMinutes >= 0 ? '+' : '-';
+      const abs = Math.abs(totalMinutes);
+      const h = Math.floor(abs / 60);
+      const m = abs % 60;
+      if (m === 0) return `${sign}${String(h).padStart(2, '0')}:00`;
+      return `${sign}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+
     function convertTsToDate() {
       const input = document.getElementById('tsInput').value;
-      const timezone = document.getElementById('tsTimezone').value;
+      const tzOffset = parseInt(document.getElementById('tsTimezone').value);
       const format = document.getElementById('tsFormat').value || 'YYYY-MM-DD HH:mm:ss';
 
       if (!input) { alert('请输入时间戳'); return; }
@@ -1195,39 +1245,32 @@ console.log('代码块');
       const ts = parseTimestamp(input);
       if (ts === null) { alert('无效的时间戳格式'); return; }
 
-      const date = new Date(ts);
-      let result = formatDate(date, format);
-
-      if (timezone !== 'UTC') {
-        const offset = getTimezoneOffset(timezone);
-        date.setMinutes(date.getMinutes() + offset);
-        result = formatDate(date, format);
-      }
+      // 通过 UTC 时间 + 时区偏移来计算目标时区的时间
+      const utcDate = new Date(ts);
+      const targetDate = new Date(utcDate.getTime() + tzOffset * 60 * 1000);
+      const result = formatDate(targetDate, format);
 
       document.getElementById('tsResultValue').textContent = result;
       document.getElementById('tsResult').style.display = 'block';
     }
 
-    function getTimezoneOffset(timezone) {
-      const offsets = {
-        'Asia/Shanghai': 0,
-        'Asia/Tokyo': -60,
-        'America/New_York': 780,
-        'Europe/London': -480
-      };
-      return offsets[timezone] || 0;
-    }
-
     function convertDateToTs() {
       const input = document.getElementById('dateInput').value;
+      const tzOffset = parseInt(document.getElementById('dateTimezone').value);
       const unit = document.getElementById('dateUnit').value;
 
       if (!input) { alert('请输入日期'); return; }
 
-      const ts = parseDate(input);
-      if (ts === null) { alert('无效的日期格式'); return; }
+      // 先用本地时区解析日期，得到本地时间对应的时间戳
+      const localTs = parseDate(input);
+      if (localTs === null) { alert('无效的日期格式'); return; }
 
-      const result = unit === 'seconds' ? Math.floor(ts / 1000) : ts;
+      // 获取本地时区偏移（分钟）
+      const localOffset = -new Date().getTimezoneOffset();
+      // 转换为目标时区的时间戳
+      const targetTs = localTs - (tzOffset - localOffset) * 60 * 1000;
+
+      const result = unit === 'seconds' ? Math.floor(targetTs / 1000) : targetTs;
       document.getElementById('dateResultValue').textContent = result;
       document.getElementById('dateResult').style.display = 'block';
     }
@@ -1999,6 +2042,11 @@ console.log('代码块');
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
     switchAlphaType('hex');
+
+    // 填充时区选项
+    const tzData = buildTimezoneOptions();
+    document.getElementById('tsTimezone').innerHTML = tzData.optionsHtml;
+    document.getElementById('dateTimezone').innerHTML = tzData.optionsHtml;
 
     // 加载保存的主题
     try {
