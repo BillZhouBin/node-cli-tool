@@ -1242,8 +1242,8 @@ console.log('代码块');
     }
 
     function calculateDiff() {
-      const start = document.getElementById('startTime').value;
-      const end = document.getElementById('endTime').value;
+      const start = document.getElementById('startTime').value.trim();
+      const end = document.getElementById('endTime').value.trim();
 
       if (!start || !end) { alert('请输入开始和结束时间'); return; }
 
@@ -1252,13 +1252,29 @@ console.log('代码块');
 
       if (startTs === null || endTs === null) { alert('时间格式无效'); return; }
 
+      // 格式化解析后的日期时间，没填时间部分默认显示 00:00:00
+      const startDate = new Date(startTs);
+      const endDate = new Date(endTs);
+      const startStr = formatDate(startDate, 'YYYY-MM-DD HH:mm:ss');
+      const endStr = formatDate(endDate, 'YYYY-MM-DD HH:mm:ss');
+
       const diff = Math.abs(endTs - startTs);
       const seconds = Math.floor(diff / 1000);
       const minutes = Math.floor(seconds / 60);
       const hours = Math.floor(minutes / 60);
       const days = Math.floor(hours / 24);
+      const remainHours = hours - days * 24;
+      const remainMinutes = minutes - hours * 60;
+      const remainSeconds = seconds - minutes * 60;
 
-      const result = `相差 ${diff} 毫秒 = ${seconds} 秒 = ${minutes} 分钟 = ${hours} 小时 = ${days} 天`;
+      let timePart = `${days} 天`;
+      if (remainHours > 0 || remainMinutes > 0 || remainSeconds > 0) {
+        timePart += ` ${String(remainHours).padStart(2, '0')}:${String(remainMinutes).padStart(2, '0')}:${String(remainSeconds).padStart(2, '0')}`;
+      }
+
+      const result = `<span style="color:#888;font-size:0.9rem;">${escapeHtml(startStr)} → ${escapeHtml(endStr)}</span><br>
+相差 ${diff} 毫秒 = ${seconds} 秒 = ${minutes} 分钟 = ${hours} 小时 = ${timePart}<br>
+<span style="color:#667eea;font-weight:600;">${days} 天 ${String(remainHours).padStart(2, '0')} 时 ${String(remainMinutes).padStart(2, '0')} 分 ${String(remainSeconds).padStart(2, '0')} 秒</span>`;
       document.getElementById('diffResultValue').innerHTML = result.replace(/ = /g, '<br>= ');
       document.getElementById('diffResult').style.display = 'block';
     }
