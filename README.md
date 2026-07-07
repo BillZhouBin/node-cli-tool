@@ -13,6 +13,7 @@ A simple yet powerful CLI tool for converting between Unix timestamps and human-
 - 🌐 **Web Interface** - Visual timestamp conversion with browser-based UI
 - 📋 **JSON Tools** - Format/minify JSON with fold view, line numbers, theme toggle
 - 🎨 **Color Tools** - Parse and calculate color values with alpha transparency
+- 📝 **Markdown Preview** - Markdown editor with live preview
 
 ## Installation
 
@@ -244,8 +245,11 @@ nodetools web --no-open          # Start server without opening browser
 **Features:**
 - Visual timestamp ↔ date conversion
 - Real-time current timestamp display
-- Timezone selection
-- Time difference calculator
+- 34 timezone options (UTC-12 to UTC+14, including half-hour offsets)
+- Time difference calculator (shows start/end times and full D/H/M/S format)
+- JSON beautify/minify with fold view, line numbers, theme toggle
+- Color value parsing and alpha calculation
+- Markdown editor with live preview (fullscreen mode supported)
 - One-click copy results
 
 **Usage:**
@@ -261,11 +265,12 @@ The web interface includes:
 
 1. **Timestamp ↔ Date Conversion**
    - Real-time current timestamp display
-   - Timezone selection
+   - 34 timezone options (UTC-12 to UTC+14, auto-detect local timezone)
    - Custom format support
 
 2. **Time Difference Calculator**
    - Calculate time differences between two timestamps
+   - Shows parsed start/end times with full D/H/M/S breakdown
    - Supported input formats:
      - **Unix timestamps**: `1713787200` (seconds) or `1713787200000` (milliseconds)
      - **Date-only**: `2025-12-21`
@@ -284,10 +289,16 @@ The web interface includes:
    - Fullscreen editing mode
    - One-click copy and clear
 
-4. **Color Tools** (New!)
+4. **Color Tools**
    - Parse color values (`#ff000000` or `0xFF000000`)
    - Calculate color with alpha transparency (hex or percentage)
    - Display color preview and RGBA values
+
+5. **Markdown Preview**
+   - Markdown syntax editing
+   - Live preview rendering (split-pane layout)
+   - Fullscreen preview mode (Esc to close)
+   - Copy HTML output, clear content
 
 ## Supported Date Formats
 
@@ -399,10 +410,10 @@ node bin/cli.js ts2date 1713787200 --format "DD/MM/YYYY HH:mm"
 
 ## Future Enhancements
 
+- [x] Time difference calculation
 - [ ] REPL interactive mode
 - [ ] Batch conversion from file input
 - [ ] Configuration file support (`.timestool.json`)
-- [ ] Time difference calculation
 - [ ] Relative time output (e.g., "2 hours ago")
 - [ ] NPM package publishing
 - [ ] More language support
