@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>开发者工具箱</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -624,6 +625,241 @@
       padding: 24px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     }
+
+    /* ===== Markdown 预览 ===== */
+    .md-container {
+      display: flex;
+      gap: 16px;
+      height: calc(100vh - 350px);
+      min-height: 420px;
+    }
+
+    .md-editor-pane,
+    .md-preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .md-pane-label {
+      font-size: 0.8rem;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .md-textarea {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      transition: border-color 0.3s;
+      background: #fafafa;
+    }
+
+    .md-textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .md-preview {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 16px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: #fff;
+      color: #333;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .md-preview h1 { font-size: 1.8em; margin: 0.6em 0 0.3em; padding-bottom: 0.3em; border-bottom: 1px solid #e0e0e0; }
+    .md-preview h2 { font-size: 1.5em; margin: 0.8em 0 0.3em; padding-bottom: 0.25em; border-bottom: 1px solid #eee; }
+    .md-preview h3 { font-size: 1.25em; margin: 0.7em 0 0.2em; }
+    .md-preview h4 { font-size: 1.1em; margin: 0.6em 0 0.15em; }
+    .md-preview h5, .md-preview h6 { font-size: 1em; margin: 0.5em 0 0.1em; }
+    .md-preview p { margin: 0.5em 0; }
+    .md-preview ul, .md-preview ol { padding-left: 1.8em; margin: 0.5em 0; }
+    .md-preview li { margin: 0.2em 0; }
+    .md-preview blockquote {
+      margin: 0.8em 0;
+      padding: 4px 16px;
+      border-left: 4px solid #667eea;
+      background: #f5f7ff;
+      color: #555;
+    }
+    .md-preview code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 0.9em;
+      color: #d63384;
+    }
+    .md-preview pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 16px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 0.8em 0;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    .md-preview pre code {
+      background: none;
+      color: #d4d4d4;
+      padding: 0;
+      font-size: inherit;
+    }
+    .md-preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.8em 0;
+    }
+    .md-preview th, .md-preview td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .md-preview th {
+      background: #f5f7ff;
+      font-weight: 600;
+    }
+    .md-preview img { max-width: 100%; border-radius: 6px; margin: 0.5em 0; }
+    .md-preview a { color: #667eea; text-decoration: none; }
+    .md-preview a:hover { text-decoration: underline; }
+    .md-preview hr { border: none; border-top: 2px solid #e0e0e0; margin: 1.2em 0; }
+
+    @media (max-width: 768px) {
+      .md-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 600px;
+      }
+      .md-editor-pane, .md-preview-pane {
+        flex: none;
+        height: 300px;
+      }
+    }
+
+    /* MD 全屏预览 */
+    .md-fullscreen-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .md-fullscreen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 28px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      flex-shrink: 0;
+    }
+
+    .md-fullscreen-close {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #888;
+      padding: 0 8px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .md-fullscreen-close:hover { color: #333; }
+
+    .md-fullscreen-preview {
+      flex: 1;
+      overflow-y: auto;
+      padding: 30px 40px;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      font-size: 16px;
+      line-height: 1.85;
+      color: #333;
+    }
+
+    .md-fullscreen-preview h1 { font-size: 2em; margin: 0.6em 0 0.3em; padding-bottom: 0.3em; border-bottom: 1px solid #e0e0e0; }
+    .md-fullscreen-preview h2 { font-size: 1.6em; margin: 0.8em 0 0.3em; padding-bottom: 0.25em; border-bottom: 1px solid #eee; }
+    .md-fullscreen-preview h3 { font-size: 1.3em; margin: 0.7em 0 0.2em; }
+    .md-fullscreen-preview h4 { font-size: 1.15em; margin: 0.6em 0 0.15em; }
+    .md-fullscreen-preview h5, .md-fullscreen-preview h6 { font-size: 1em; margin: 0.5em 0 0.1em; }
+    .md-fullscreen-preview p { margin: 0.6em 0; }
+    .md-fullscreen-preview ul, .md-fullscreen-preview ol { padding-left: 2em; margin: 0.6em 0; }
+    .md-fullscreen-preview li { margin: 0.3em 0; }
+    .md-fullscreen-preview blockquote {
+      margin: 1em 0;
+      padding: 8px 20px;
+      border-left: 4px solid #667eea;
+      background: #f5f7ff;
+      color: #555;
+    }
+    .md-fullscreen-preview code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size: 0.9em;
+      color: #d63384;
+    }
+    .md-fullscreen-preview pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 1em 0;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .md-fullscreen-preview pre code {
+      background: none;
+      color: #d4d4d4;
+      padding: 0;
+      font-size: inherit;
+    }
+    .md-fullscreen-preview table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+    .md-fullscreen-preview th, .md-fullscreen-preview td {
+      border: 1px solid #ddd;
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .md-fullscreen-preview th {
+      background: #f5f7ff;
+      font-weight: 600;
+    }
+    .md-fullscreen-preview img { max-width: 100%; border-radius: 8px; margin: 0.8em 0; }
+    .md-fullscreen-preview a { color: #667eea; text-decoration: none; }
+    .md-fullscreen-preview a:hover { text-decoration: underline; }
+    .md-fullscreen-preview hr { border: none; border-top: 2px solid #e0e0e0; margin: 1.5em 0; }
   </style>
 </head>
 <body>
@@ -640,6 +876,7 @@
       <button class="nav-btn active" onclick="switchTool('time')" id="nav-time">⏰ 时间转换</button>
       <button class="nav-btn" onclick="switchTool('color')" id="nav-color">🎨 颜色工具</button>
       <button class="nav-btn" onclick="switchTool('json')" id="nav-json">📋 JSON 工具</button>
+      <button class="nav-btn" onclick="switchTool('md')" id="nav-md">📝 MD 预览</button>
     </nav>
 
     <!-- ==================== 时间转换面板 ==================== -->
@@ -823,6 +1060,46 @@
             <div id="jsonEditorLines" class="json-editor-lines"></div>
           </div>
         </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== Markdown 预览面板 ==================== -->
+    <div id="panel-md" class="panel">
+      <div class="card" style="padding:20px 30px;">
+        <h2 style="display:flex;align-items:center;justify-content:space-between;">
+          <span>📝 Markdown 预览</span>
+          <span>
+            <button class="fullscreen-btn" onclick="toggleMdFullscreen()" title="全屏编辑">⛶</button>
+          </span>
+        </h2>
+        <div class="btn-group" style="margin-bottom:12px;">
+          <button class="btn copy-btn" onclick="copyMdHtml()">复制 HTML</button>
+          <button class="btn btn-secondary" onclick="clearMd()">清空</button>
+        </div>
+        <div class="md-container">
+          <div class="md-editor-pane">
+            <div class="md-pane-label">编辑</div>
+            <textarea id="mdInput" class="md-textarea" placeholder="# 输入 Markdown 内容...
+
+## 标题
+**粗体** *斜体* ~~删除线~~
+
+- 列表项 1
+- 列表项 2
+
+> 引用文本
+
+`行内代码`
+
+```js
+console.log('代码块');
+```"></textarea>
+          </div>
+          <div class="md-preview-pane">
+            <div class="md-pane-label">预览</div>
+            <div id="mdPreview" class="md-preview"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1715,6 +1992,93 @@
     applyTheme();
     // 初始化编辑器
     loadJsonText('');
+
+    // ========== Markdown 预览 ==========
+    let mdRenderTimeout = null;
+
+    function renderMd() {
+      const input = document.getElementById('mdInput').value;
+      const preview = document.getElementById('mdPreview');
+      if (!input.trim()) {
+        preview.innerHTML = '<div style="color:#aaa;text-align:center;padding-top:60px;">在左侧输入 Markdown 内容即可预览</div>';
+        return;
+      }
+      try {
+        preview.innerHTML = marked.parse(input);
+      } catch (e) {
+        preview.innerHTML = '<div style="color:#dc3545;">Markdown 渲染出错: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    function copyMdHtml() {
+      const input = document.getElementById('mdInput').value.trim();
+      if (!input) { showToast('没有可复制的内容'); return; }
+      const html = marked.parse(input);
+      navigator.clipboard.writeText(html).then(() => {
+        showToast('HTML 已复制到剪贴板');
+      });
+    }
+
+    function clearMd() {
+      document.getElementById('mdInput').value = '';
+      document.getElementById('mdPreview').innerHTML = '<div style="color:#aaa;text-align:center;padding-top:60px;">在左侧输入 Markdown 内容即可预览</div>';
+    }
+
+    // 全屏预览
+    function toggleMdFullscreen() {
+      const existing = document.querySelector('.md-fullscreen-overlay');
+      if (existing) {
+        existing.remove();
+        document.body.style.overflow = '';
+        return;
+      }
+
+      const input = document.getElementById('mdInput').value;
+      const html = input.trim() ? marked.parse(input) : '<div style="color:#999;text-align:center;padding-top:80px;">暂无内容</div>';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'md-fullscreen-overlay';
+      overlay.innerHTML = `
+        <div class="md-fullscreen-header">
+          <span>📝 Markdown 预览</span>
+          <button class="md-fullscreen-close" onclick="toggleMdFullscreen()">&times;</button>
+        </div>
+        <div class="md-fullscreen-preview">${html}</div>
+      `;
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) toggleMdFullscreen();
+      });
+
+      document.addEventListener('keydown', function escHandler(e) {
+        if (e.key === 'Escape') { toggleMdFullscreen(); document.removeEventListener('keydown', escHandler); }
+      });
+    }
+
+    // 实时预览：输入后 200ms 防抖
+    document.addEventListener('input', function(e) {
+      if (e.target.id !== 'mdInput') return;
+      clearTimeout(mdRenderTimeout);
+      mdRenderTimeout = setTimeout(renderMd, 200);
+    });
+
+    // 初始化 marked（CDN 加载后）
+    function initMarked() {
+      if (typeof marked === 'undefined') {
+        setTimeout(initMarked, 100);
+        return;
+      }
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      });
+    }
+    initMarked();
+
+    // 初始预览
+    renderMd();
   </script>
 </body>
 </html>
