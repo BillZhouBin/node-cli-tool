@@ -21,3 +21,6 @@ npm-debug.log*
 # Temporary files
 .tmp/
 tmp/
+
+# WorkBuddy internal state (assistant memory, skills cache)
+.workbuddy/
