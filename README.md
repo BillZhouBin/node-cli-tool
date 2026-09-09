@@ -1,4 +1,4 @@
-# timestool - Unix Timestamp ↔ Date Converter
+# nodetools - Unix Timestamp ↔ Date Converter
 
 A simple yet powerful CLI tool for converting between Unix timestamps and human-readable dates.
 
@@ -23,7 +23,7 @@ npm install
 
 ## Global Setup (Optional)
 
-Enable `timestool` command to be used globally without `node bin/cli.js` prefix.
+Enable `nodetools` command to be used globally without `node bin/cli.js` prefix.
 
 ### Option 1: npm link (Recommended for development)
 
@@ -33,9 +33,9 @@ npm link
 
 After running this, you can use the tool globally:
 ```bash
-timestool now
-timestool ts2date 1713787200
-timestool --help
+nodetools now
+nodetools ts2date 1713787200
+nodetools --help
 ```
 
 To uninstall the global link:
@@ -52,7 +52,7 @@ npm install -g
 ### Verify installation
 
 ```bash
-timestool --help
+nodetools --help
 ```
 
 If help information is displayed, the setup is successful.
@@ -61,15 +61,15 @@ If help information is displayed, the setup is successful.
 
 ## Understanding the CLI Command Name
 
-The global command name (`timestool`) is defined in `package.json` under the `bin` field:
+The global command name (`nodetools`) is defined in `package.json` under the `bin` field:
 
 ```json
 "bin": {
-  "timestool": "bin/cli.js"
+  "nodetools": "bin/cli.js"
 }
 ```
 
-- **Key** (`timestool`) — The command name you'll type in terminal
+- **Key** (`nodetools`) — The command name you'll type in terminal
 - **Value** (`bin/cli.js`) — The actual script file to execute
 
 ### How to change the command name
@@ -91,7 +91,7 @@ npm link   # or npm install -g
 
 | bin Configuration | Command |
 |-------------------|---------|
-| `"timestool": "bin/cli.js"` | `timestool` |
+| `"nodetools": "bin/cli.js"` | `nodetools` |
 | `"ts": "bin/cli.js"` | `ts` |
 | `"time": "bin/cli.js"` | `time` |
 | `"unix": "bin/cli.js"` | `unix` |
@@ -370,6 +370,7 @@ node_tool/
 
 ## Dependencies
 
+- **[chalk](https://www.npmjs.com/package/chalk)** — Terminal string styling (colors)
 - **[commander](https://www.npmjs.com/package/commander)** — CLI framework with argument parsing
 - **[dayjs](https://www.npmjs.com/package/dayjs)** — Lightweight date library with timezone support
 
@@ -411,16 +412,20 @@ node bin/cli.js ts2date 1713787200 --format "DD/MM/YYYY HH:mm"
 ## Future Enhancements
 
 - [x] Time difference calculation
+- [x] Extended timezone support (34 UTC offsets from UTC-12 to UTC+14)
+- [x] Color tool (parse + alpha calculation)
+- [x] JSON editor with fullscreen mode, fold view, line numbers, theme toggle
+- [x] Markdown editor with live preview and fullscreen mode
 - [ ] REPL interactive mode
 - [ ] Batch conversion from file input
-- [ ] Configuration file support (`.timestool.json`)
+- [ ] Configuration file support (`.nodetools.json`)
 - [ ] Relative time output (e.g., "2 hours ago")
 - [ ] NPM package publishing
 - [ ] More language support
 
 ## License
 
-ISC
+MIT
 
 ## Contributing
 

@@ -1,4 +1,4 @@
-# timestool - Unix 时间戳 ↔ 日期转换工具
+# nodetools - Unix 时间戳 ↔ 日期转换工具
 
 一个简洁而强大的 CLI 工具，用于在 Unix 时间戳和人类可读日期之间进行转换。
 
@@ -23,7 +23,7 @@ npm install
 
 ## 全局配置（可选）
 
-启用 `timestool` 命令，无需 `node bin/cli.js` 前缀即可全局使用。
+启用 `nodetools` 命令，无需 `node bin/cli.js` 前缀即可全局使用。
 
 ### 方式一：npm link（推荐用于开发）
 
@@ -33,9 +33,9 @@ npm link
 
 运行后，即可全局使用：
 ```bash
-timestool now
-timestool ts2date 1713787200
-timestool --help
+nodetools now
+nodetools ts2date 1713787200
+nodetools --help
 ```
 
 卸载全局链接：
@@ -52,7 +52,7 @@ npm install -g
 ### 验证安装
 
 ```bash
-timestool --help
+nodetools --help
 ```
 
 如果显示帮助信息，说明配置成功。
@@ -61,15 +61,15 @@ timestool --help
 
 ## 理解 CLI 命令名称
 
-全局命令名（`timestool`）定义在 `package.json` 的 `bin` 字段中：
+全局命令名（`nodetools`）定义在 `package.json` 的 `bin` 字段中：
 
 ```json
 "bin": {
-  "timestool": "bin/cli.js"
+  "nodetools": "bin/cli.js"
 }
 ```
 
-- **键** (`timestool`) — 你在终端中输入的命令名
+- **键** (`nodetools`) — 你在终端中输入的命令名
 - **值** (`bin/cli.js`) — 要执行的实际脚本文件
 
 ### 如何修改命令名
@@ -91,7 +91,7 @@ npm link   # 或 npm install -g
 
 | bin 配置 | 命令 |
 |---------|------|
-| `"timestool": "bin/cli.js"` | `timestool` |
+| `"nodetools": "bin/cli.js"` | `nodetools` |
 | `"ts": "bin/cli.js"` | `ts` |
 | `"time": "bin/cli.js"` | `time` |
 | `"unix": "bin/cli.js"` | `unix` |
@@ -370,6 +370,7 @@ node_tool/
 
 ## 依赖
 
+- **[chalk](https://www.npmjs.com/package/chalk)** — 终端字符串着色（彩色输出）
 - **[commander](https://www.npmjs.com/package/commander)** — CLI 框架，用于参数解析
 - **[dayjs](https://www.npmjs.com/package/dayjs)** — 轻量级日期库，支持时区
 
@@ -411,16 +412,20 @@ node bin/cli.js ts2date 1713787200 --format "DD/MM/YYYY HH:mm"
 ## 未来计划
 
 - [x] 时间差计算
+- [x] 时区扩展（34 个 UTC 偏移，从 UTC-12 至 UTC+14）
+- [x] 颜色工具（解析 + 透明度计算）
+- [x] JSON 编辑器（含全屏模式、折叠视图、行号、主题切换）
+- [x] Markdown 编辑与实时预览（全屏模式）
 - [ ] REPL 交互模式
 - [ ] 支持文件输入批量转换
-- [ ] 配置文件支持（`.timestool.json`）
+- [ ] 配置文件支持（`.nodetools.json`）
 - [ ] 相对时间输出（例如 "2 小时前"）
 - [ ] NPM 包发布
 - [ ] 更多语言支持
 
 ## 开源协议
 
-ISC
+MIT
 
 ## 贡献
 

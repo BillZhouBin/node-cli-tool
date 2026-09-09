@@ -2,7 +2,6 @@
   "name": "@zi_xiao_jun/nodetools",
   "version": "1.0.0",
   "description": "Unix timestamp ↔ date conversion CLI tool. Easily convert between Unix timestamps and readable dates with support for custom formats and timezones.",
-  "main": "index.js",
   "bin": {
     "nodetools": "bin/cli.js"
   },

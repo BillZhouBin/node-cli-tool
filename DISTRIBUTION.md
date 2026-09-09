@@ -1,6 +1,6 @@
-# 🚀 分发指南 - timestool
+# 🚀 分发指南 - nodetools
 
-这个文档展示如何分发 timestool 到用户手中。
+这个文档展示如何分发 nodetools 到用户手中。
 
 ---
 
@@ -18,22 +18,22 @@ cd /Users/huami/Desktop/github/node_learning/node_tool
 npm link
 
 # 3. 验证安装
-timestool --help
+nodetools --help
 ```
 
 ### 使用方式
 
 ```bash
 # 在任何终端窗口、任何目录下都可以用
-timestool ts2date 1713787200
-timestool date2ts "2024-04-22"
-timestool now
+nodetools ts2date 1713787200
+nodetools date2ts "2024-04-22"
+nodetools now
 ```
 
 ### 卸载
 
 ```bash
-npm unlink -g timestool
+npm unlink -g nodetools
 ```
 
 ---
@@ -48,10 +48,10 @@ npm unlink -g timestool
 # 初始化 git 仓库（如果未初始化）
 git init
 git add .
-git commit -m "Initial commit: timestool v1.0.0"
+git commit -m "Initial commit: nodetools v1.0.0"
 
 # 添加远程仓库
-git remote add origin https://github.com/YOUR_USERNAME/timestool.git
+git remote add origin https://github.com/YOUR_USERNAME/nodetools.git
 git branch -M main
 git push -u origin main
 ```
@@ -62,15 +62,15 @@ git push -u origin main
 
 **方式 A：全局安装**
 ```bash
-npm install -g https://github.com/YOUR_USERNAME/timestool.git
+npm install -g https://github.com/YOUR_USERNAME/nodetools.git
 # 或使用 git 协议
-npm install -g git+ssh://git@github.com/YOUR_USERNAME/timestool.git
+npm install -g git+ssh://git@github.com/YOUR_USERNAME/nodetools.git
 ```
 
 **方式 B：本地使用**
 ```bash
-git clone https://github.com/YOUR_USERNAME/timestool.git
-cd timestool
+git clone https://github.com/YOUR_USERNAME/nodetools.git
+cd nodetools
 npm install
 node bin/cli.js ts2date 1713787200
 ```
@@ -92,14 +92,14 @@ node bin/cli.js ts2date 1713787200
 
 ```json
 {
-  "name": "@your-username/timestool"
+  "name": "@your-username/nodetools"
 }
 ```
 
 或不带 scope（需要完全唯一）：
 ```json
 {
-  "name": "timestool-convert"
+  "name": "nodetools-convert"
 }
 ```
 
@@ -108,18 +108,18 @@ node bin/cli.js ts2date 1713787200
 确保以下字段已正确填写：
 ```json
 {
-  "name": "@your-username/timestool",
+  "name": "@your-username/nodetools",
   "version": "1.0.0",
   "description": "Unix timestamp ↔ date conversion CLI tool",
   "author": "Your Name <email@example.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/timestool.git"
+    "url": "https://github.com/your-username/nodetools.git"
   },
-  "homepage": "https://github.com/your-username/timestool#readme",
+  "homepage": "https://github.com/your-username/nodetools#readme",
   "bin": {
-    "timestool": "bin/cli.js"
+    "nodetools": "bin/cli.js"
   }
 }
 ```
@@ -147,19 +147,19 @@ npm publish --access=public
 ### Step 5: 验证发布
 
 ```bash
-npm info @your-username/timestool
+npm info @your-username/nodetools
 ```
 
-或访问 `https://www.npmjs.com/package/@your-username/timestool`
+或访问 `https://www.npmjs.com/package/@your-username/nodetools`
 
 ### Step 6: 用户安装
 
 发布后，任何人都可以安装使用：
 
 ```bash
-npm install -g @your-username/timestool
+npm install -g @your-username/nodetools
 # 或
-npm install -g timestool-convert  # 如果用的是非 scoped 包名
+npm install -g nodetools-convert  # 如果用的是非 scoped 包名
 ```
 
 ---
@@ -189,23 +189,23 @@ ENTRYPOINT ["node", "bin/cli.js"]
 
 ```bash
 # 本地构建测试
-docker build -t timestool:1.0.0 .
+docker build -t nodetools:1.0.0 .
 
 # 测试
-docker run timestool:1.0.0 ts2date 1713787200
+docker run nodetools:1.0.0 ts2date 1713787200
 
 # 推送到 Docker Hub
-docker tag timestool:1.0.0 your-username/timestool:1.0.0
-docker push your-username/timestool:1.0.0
+docker tag nodetools:1.0.0 your-username/nodetools:1.0.0
+docker push your-username/nodetools:1.0.0
 ```
 
 ### 用户使用
 
 ```bash
-docker run --rm your-username/timestool:1.0.0 ts2date 1713787200
+docker run --rm your-username/nodetools:1.0.0 ts2date 1713787200
 # 或创建别名
-alias timestool="docker run --rm your-username/timestool:1.0.0"
-timestool ts2date 1713787200
+alias nodetools="docker run --rm your-username/nodetools:1.0.0"
+nodetools ts2date 1713787200
 ```
 
 ---
@@ -221,12 +221,12 @@ timestool ts2date 1713787200
 npm install -g pkg
 
 # 构建可执行文件
-pkg . --targets node18-macos-x64,node18-linux-x64,node18-win-x64 --output timestool
+pkg . --targets node18-macos-x64,node18-linux-x64,node18-win-x64 --output nodetools
 
 # 输出：
-# - timestool-macos   (macOS)
-# - timestool-linux   (Linux)
-# - timestool-win.exe (Windows)
+# - nodetools-macos   (macOS)
+# - nodetools-linux   (Linux)
+# - nodetools-win.exe (Windows)
 ```
 
 ### 分发可执行文件
@@ -235,13 +235,13 @@ pkg . --targets node18-macos-x64,node18-linux-x64,node18-win-x64 --output timest
 
 ```bash
 # macOS
-./timestool-macos ts2date 1713787200
+./nodetools-macos ts2date 1713787200
 
 # Linux
-./timestool-linux ts2date 1713787200
+./nodetools-linux ts2date 1713787200
 
 # Windows
-./timestool-win.exe ts2date 1713787200
+./nodetools-win.exe ts2date 1713787200
 ```
 
 ---
@@ -273,7 +273,7 @@ npm version major      # 1.0.0 → 2.0.0
 npm publish
 
 # 4. 用户更新
-npm install -g @your-username/timestool@latest
+npm install -g @your-username/nodetools@latest
 ```
 
 ---
@@ -325,7 +325,7 @@ npm install -g @your-username/timestool@latest
 
 ```bash
 npm link
-timestool ts2date 1713787200
+nodetools ts2date 1713787200
 ```
 
 然后根据需要选择其他分发方式！
