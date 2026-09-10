@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="zh-CN" data-page-node-id="pk7USASyerRDzqLDHo3j5Q">
+<head data-page-node-id="rgEm8J6nVlFcRr9ulbuIKA">
+  <meta charset="UTF-8" data-page-node-id="iMDwflunXpHQ3Uk6DEhgTO">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="yjKorg8dHwB35zOkrg85le">
   <title>开发者工具箱</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -497,40 +497,115 @@
       border-color: #aaa;
     }
 
-    /* ===== 全屏 overlay 亮色默认 + 暗色主题 ===== */
-    .fullscreen-overlay {
-      background: #fafafa;
+    /* ===== JSON 查找条 ===== */
+    .json-find-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
     }
-
-    .fullscreen-overlay .fullscreen-header {
-      color: #333;
-    }
-
-    .fullscreen-overlay .fullscreen-close {
-      color: #666;
-    }
-
-    .fullscreen-overlay .fullscreen-close:hover { color: #333; }
-
-    .fullscreen-overlay.theme-dark {
-      background: #1e1e1e;
-    }
-
-    .fullscreen-overlay.theme-dark .fullscreen-header {
-      color: #d4d4d4;
-    }
-
-    .fullscreen-overlay.theme-dark .fullscreen-close {
-      color: #aaa;
-    }
-
-    .fullscreen-overlay.theme-dark .fullscreen-close:hover { color: #d4d4d4; }
-
-    /* 全屏下的编辑器样式调整 */
-    .fullscreen-overlay .json-editor {
-      border-radius: 10px;
+    .json-find-bar input {
       flex: 1;
-      min-height: 0;
+      min-width: 0;
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .json-find-bar input:focus { border-color: #667eea; }
+    .json-find-count {
+      font-size: 0.85rem;
+      color: #888;
+      min-width: 58px;
+      text-align: center;
+    }
+
+    /* ===== JSON 错误行高亮 ===== */
+    .json-editor-error-line .json-editor-content {
+      background: rgba(220,53,69,0.12);
+      border-radius: 0 4px 4px 0;
+    }
+    .json-editor-error-line .json-editor-line-num {
+      color: #dc3545;
+      font-weight: 600;
+    }
+    .json-editor.theme-dark .json-editor-error-line .json-editor-content {
+      background: rgba(220,53,69,0.22);
+    }
+
+    /* ===== JSON 查找命中高亮 ===== */
+    .json-editor-match-line .json-editor-content {
+      background: rgba(255,193,7,0.22);
+      border-radius: 0 4px 4px 0;
+    }
+    .json-editor-match-current .json-editor-content {
+      background: rgba(255,152,0,0.45);
+    }
+    .json-editor.theme-dark .json-editor-match-line .json-editor-content {
+      background: rgba(255,193,7,0.16);
+    }
+    .json-editor.theme-dark .json-editor-match-current .json-editor-content {
+      background: rgba(255,152,0,0.34);
+    }
+
+    /* ===== JSON 行选区（自建跨行选择，因原生选区无法跨 contenteditable 宿主） ===== */
+    .json-editor-line.json-selected-line .json-editor-content {
+      background: rgba(58,132,255,0.22);
+      border-radius: 0 4px 4px 0;
+    }
+    .json-editor-line.json-selected-line .json-editor-line-num {
+      color: #3a84ff;
+      font-weight: 600;
+    }
+    .json-editor.theme-dark .json-editor-line.json-selected-line .json-editor-content {
+      background: rgba(88,166,255,0.26);
+    }
+    .json-editor.theme-dark .json-editor-line.json-selected-line .json-editor-line-num {
+      color: #58a6ff;
+    }
+    .json-editor.json-dragging .json-editor-content {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .json-sel-hint {
+      font-size: 0.78rem;
+      color: #8a8f98;
+      margin: -4px 0 10px;
+    }
+
+    /* ===== 全屏：同一实例 CSS 放大（不再复制 DOM） ===== */
+    #panel-json.panel.json-fullscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      z-index: 9999;
+      margin: 0;
+      padding: 20px 28px;
+      box-sizing: border-box;
+      background: #f4f5f7;
+      overflow: auto;
+    }
+    #panel-json.panel.json-fullscreen .card {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    #panel-json.panel.json-fullscreen.json-fullscreen-dark {
+      background: #141414;
+    }
+    body.json-fullscreen-lock {
+      overflow: hidden;
     }
 
     /* JSON 面板撑满视口 */
@@ -557,38 +632,6 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-    }
-
-    /* 全屏 */
-    .fullscreen-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      padding: 15px 25px;
-    }
-
-
-
-    .fullscreen-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
-    .fullscreen-close {
-      background: none;
-      border: none;
-      font-size: 1.8rem;
-      cursor: pointer;
-      padding: 0 8px;
-      line-height: 1;
     }
 
     .fullscreen-btn {
@@ -862,190 +905,201 @@
     .md-fullscreen-preview hr { border: none; border-top: 2px solid #e0e0e0; margin: 1.5em 0; }
   </style>
 </head>
-<body>
-  <div class="container">
+<body data-page-node-id="6NKflw8ilwB8XnZWIUtExE">
+  <div class="container" data-page-node-id="sn6ryvcth1ukIxK78uOVCO">
     <!-- 当前时间 -->
-    <div class="current-time">
-      <div class="time-label">当前 Unix 时间戳（点击复制）</div>
-      <div class="time-value" id="currentTimestamp" onclick="copyTimestamp()" title="点击复制" style="cursor:pointer;">-</div>
-      <div class="date-value" id="currentDate">-</div>
+    <div class="current-time" data-page-node-id="isdOKOZqRSPH3sLETGEA6K">
+      <div class="time-label" data-page-node-id="IFWEiFHigBqz8FJ7PoAKsF">当前 Unix 时间戳（点击复制）</div>
+      <div class="time-value" id="currentTimestamp" onclick="copyTimestamp()" title="点击复制" style="cursor:pointer;" data-page-node-id="YHKBtDXrwRoUIzCDqVlgyC">-</div>
+      <div class="date-value" id="currentDate" data-page-node-id="wsAjlj9XDGeGQmKoqtW3UQ">-</div>
     </div>
 
     <!-- 导航栏 -->
-    <nav class="nav">
-      <button class="nav-btn active" onclick="switchTool('time')" id="nav-time">⏰ 时间转换</button>
-      <button class="nav-btn" onclick="switchTool('color')" id="nav-color">🎨 颜色工具</button>
-      <button class="nav-btn" onclick="switchTool('json')" id="nav-json">📋 JSON 工具</button>
-      <button class="nav-btn" onclick="switchTool('md')" id="nav-md">📝 MD 预览</button>
+    <nav class="nav" data-page-node-id="7cTOXmaaVCamtWZTzzQHfz">
+      <button class="nav-btn active" onclick="switchTool('time')" id="nav-time" data-page-node-id="HfDll3m1T3E9YIoliYubwd">⏰ 时间转换</button>
+      <button class="nav-btn" onclick="switchTool('color')" id="nav-color" data-page-node-id="qaTtJdwzFwETVBG5ULc5L3">🎨 颜色工具</button>
+      <button class="nav-btn" onclick="switchTool('json')" id="nav-json" data-page-node-id="gBZrBqEqTUPK4MCwlcL3dF">📋 JSON 工具</button>
+      <button class="nav-btn" onclick="switchTool('md')" id="nav-md" data-page-node-id="qCl1FhLNU9wBGQ7AbyXBPB">📝 MD 预览</button>
     </nav>
 
     <!-- ==================== 时间转换面板 ==================== -->
-    <div id="panel-time" class="panel active">
-      <div class="grid-2">
+    <div id="panel-time" class="panel active" data-page-node-id="tZML57hBwxuy9pgToZCr2U">
+      <div class="grid-2" data-page-node-id="6p5fNklv1tDtNBf95iT2zi">
         <!-- 时间戳 → 日期 -->
-        <div class="time-card">
-          <h2>⏰ 时间戳 → 日期</h2>
-          <div class="input-group">
-            <label>时间戳（秒/毫秒自动识别）</label>
-            <input type="text" id="tsInput" placeholder="例如: 1713787200 或 1713787200000">
+        <div class="time-card" data-page-node-id="fpm3z3WOvbOEAn1flYVvf0">
+          <h2 data-page-node-id="pNl5U4btIgDcmQJbQumqnn">⏰ 时间戳 → 日期</h2>
+          <div class="input-group" data-page-node-id="YHUL4Vu2QJeMRQg3QAo15A">
+            <label data-page-node-id="tGZyIW54Wb2KzAatOK7ev4">时间戳（秒/毫秒自动识别）</label>
+            <input type="text" id="tsInput" placeholder="例如: 1713787200 或 1713787200000" data-page-node-id="CuDXTZcFIgSn2nFv6eYMlp">
           </div>
-          <div class="input-group">
-            <label>时区</label>
-            <select id="tsTimezone"></select>
+          <div class="input-group" data-page-node-id="3tfGFo6yaFO9oFiDHOvpId">
+            <label data-page-node-id="UM6s5qrmzVrDZUEQwY5E7v">时区</label>
+            <select id="tsTimezone" data-page-node-id="4guzCWbQUcbdM11lNJRerW"></select>
           </div>
-          <div class="input-group">
-            <label>输出格式</label>
-            <input type="text" id="tsFormat" value="YYYY-MM-DD HH:mm:ss" placeholder="YYYY-MM-DD HH:mm:ss">
+          <div class="input-group" data-page-node-id="ay14qNA21jV9Qlxtge1TJT">
+            <label data-page-node-id="YnBEbwh49NwQaXVYTZpqxS">输出格式</label>
+            <input type="text" id="tsFormat" value="YYYY-MM-DD HH:mm:ss" placeholder="YYYY-MM-DD HH:mm:ss" data-page-node-id="OYyST4U6docPII6RFbht09">
           </div>
-          <div class="btn-group">
-            <button class="btn" onclick="convertTsToDate()">转换</button>
-            <button class="btn btn-secondary" onclick="useCurrentTimestamp()">使用当前时间</button>
+          <div class="btn-group" data-page-node-id="89KtBY8yKeWBeBex3kKuki">
+            <button class="btn" onclick="convertTsToDate()" data-page-node-id="8AO7nPRHOisMR9bpmHBDmW">转换</button>
+            <button class="btn btn-secondary" onclick="useCurrentTimestamp()" data-page-node-id="wxV9WATf78vFwnEZVDV4WJ">使用当前时间</button>
           </div>
-          <div class="result" id="tsResult" style="display:none;">
-            <div class="result-label">转换结果</div>
-            <div class="result-value" id="tsResultValue"></div>
-            <button class="btn copy-btn" onclick="copyResult('tsResultValue')">复制结果</button>
+          <div class="result" id="tsResult" style="display:none;" data-page-node-id="2fKuvORJu6kNTPzFfPJu8T">
+            <div class="result-label" data-page-node-id="tWJobBu4BYXirgf9KBNJPM">转换结果</div>
+            <div class="result-value" id="tsResultValue" data-page-node-id="FNct7FYoICOWIr1vQuWNrF"></div>
+            <button class="btn copy-btn" onclick="copyResult('tsResultValue')" data-page-node-id="gHxDHKfuEuGzxjEghtYj3p">复制结果</button>
           </div>
         </div>
 
         <!-- 日期 → 时间戳 -->
-        <div class="time-card">
-          <h2>📅 日期 → 时间戳</h2>
-          <div class="input-group">
-            <label>日期时间</label>
-            <input type="text" id="dateInput" placeholder="例如: 2024-04-22 20:00:00">
+        <div class="time-card" data-page-node-id="vF9ULatcso26U4k7CsLGee">
+          <h2 data-page-node-id="HaNsC1ckiApmunhlkWE8D6">📅 日期 → 时间戳</h2>
+          <div class="input-group" data-page-node-id="z7AtrfFGHVD1bAZz39gbpG">
+            <label data-page-node-id="EvP3M4DwoyQPmm47CDf94S">日期时间</label>
+            <input type="text" id="dateInput" placeholder="例如: 2024-04-22 20:00:00" data-page-node-id="Uy6Ip6A7yfCiZ1D5GvbC40">
           </div>
-          <div class="input-group">
-            <label>时区</label>
-            <select id="dateTimezone"></select>
+          <div class="input-group" data-page-node-id="XN2D2zIYPl8K7M8aO8q5el">
+            <label data-page-node-id="P4txmdvmXRO8NatOwjibX9">时区</label>
+            <select id="dateTimezone" data-page-node-id="Iu6dbp3r6Epck9r3LTV69E"></select>
           </div>
-          <div class="input-group">
-            <label>输出单位</label>
-            <select id="dateUnit">
-              <option value="seconds">秒 (10位)</option>
-              <option value="milliseconds">毫秒 (13位)</option>
+          <div class="input-group" data-page-node-id="2R2fua5w5vHBGrxMDKkZdM">
+            <label data-page-node-id="EFEXIfJbAiDBglDXKd0XGU">输出单位</label>
+            <select id="dateUnit" data-page-node-id="2CvC5yOfvklDZhvQgX7IHG">
+              <option value="seconds" data-page-node-id="qPO8H62pk0TLlz6DzRXVJq">秒 (10位)</option>
+              <option value="milliseconds" data-page-node-id="HrT4746gw7M6ZfuCCfkiYS">毫秒 (13位)</option>
             </select>
           </div>
-          <div class="btn-group">
-            <button class="btn" onclick="convertDateToTs()">转换</button>
-            <button class="btn btn-secondary" onclick="useCurrentDate()">使用当前时间</button>
+          <div class="btn-group" data-page-node-id="Hf7JFCAjmoFhny9FVjNEin">
+            <button class="btn" onclick="convertDateToTs()" data-page-node-id="Mgrh9aw9rE4yMOVEzpCAWn">转换</button>
+            <button class="btn btn-secondary" onclick="useCurrentDate()" data-page-node-id="AWZnMNHWMvKhaRLUkB4NPI">使用当前时间</button>
           </div>
-          <div class="result" id="dateResult" style="display:none;">
-            <div class="result-label">转换结果</div>
-            <div class="result-value" id="dateResultValue"></div>
-            <button class="btn copy-btn" onclick="copyResult('dateResultValue')">复制结果</button>
+          <div class="result" id="dateResult" style="display:none;" data-page-node-id="aJLzdZF7eTDYoO2ITm2Y14">
+            <div class="result-label" data-page-node-id="dDhizGx7lN6d7Gi2b4qnai">转换结果</div>
+            <div class="result-value" id="dateResultValue" data-page-node-id="9OFGQyiq2k8geNFZXnMoig"></div>
+            <button class="btn copy-btn" onclick="copyResult('dateResultValue')" data-page-node-id="LebIWjKgzycEo2ThaoZBD7">复制结果</button>
           </div>
         </div>
       </div>
 
       <!-- 时间差计算 -->
-      <div class="time-card" style="margin-top:20px;">
-        <h2>🧮 时间差计算</h2>
-        <div class="grid-2">
-          <div class="input-group">
-            <label>开始时间</label>
-            <input type="text" id="startTime" placeholder="时间戳或日期">
+      <div class="time-card" style="margin-top:20px;" data-page-node-id="DeLTgOuuZZDkHAlkxxATQI">
+        <h2 data-page-node-id="PgD3seriOsxNek4U3GPbjL">🧮 时间差计算</h2>
+        <div class="grid-2" data-page-node-id="mhi9qj45WyJP7Ae1bhKdny">
+          <div class="input-group" data-page-node-id="gcpq1CI6iKKXxniMCpLgMI">
+            <label data-page-node-id="AzyqWBnLBTFfiuT2I4jlWR">开始时间</label>
+            <input type="text" id="startTime" placeholder="时间戳或日期" data-page-node-id="WbgPRr69epmJVgsqZ3Wqa9">
           </div>
-          <div class="input-group">
-            <label>结束时间</label>
-            <input type="text" id="endTime" placeholder="时间戳或日期">
+          <div class="input-group" data-page-node-id="ojR1u3cfzYhJdVWAFf6D9z">
+            <label data-page-node-id="uy2yCpF4XV8kySxGI9cJLe">结束时间</label>
+            <input type="text" id="endTime" placeholder="时间戳或日期" data-page-node-id="kkBC8Dr2GYjLOSqiAMJuy8">
           </div>
         </div>
-        <div class="btn-group">
-          <button class="btn" onclick="calculateDiff()">计算差值</button>
+        <div class="btn-group" data-page-node-id="fzvBJ04SMicIv2ni769DSH">
+          <button class="btn" onclick="calculateDiff()" data-page-node-id="7WLWIrkDPEDjm0gwm62mNh">计算差值</button>
         </div>
-        <div class="result" id="diffResult" style="display:none;">
-          <div class="result-label">时间差</div>
-          <div class="result-value" id="diffResultValue"></div>
+        <div class="result" id="diffResult" style="display:none;" data-page-node-id="t8DVwoePPBrAF50TE6GzDN">
+          <div class="result-label" data-page-node-id="kjSF5JnQBJw9FfBnl1ewBg">时间差</div>
+          <div class="result-value" id="diffResultValue" data-page-node-id="hoDOlViZH3TAgZn7BGSlI3"></div>
         </div>
       </div>
     </div>
 
     <!-- ==================== 颜色工具面板 ==================== -->
-    <div id="panel-color" class="panel">
-      <div class="card">
-        <h2>🎨 颜色值计算</h2>
+    <div id="panel-color" class="panel" data-page-node-id="K3EYPNIf77kd75WWKgBMGU">
+      <div class="card" data-page-node-id="NRj75amkIXQCP99PoNBLX2">
+        <h2 data-page-node-id="rigCnzhhv5UcEwJcnGVyt0">🎨 颜色值计算</h2>
 
         <!-- 解析色值 -->
-        <div class="input-group">
-          <label>输入色值（如 #ff000000 或 0xFF000000）</label>
-          <input type="text" id="colorInput" placeholder="#ff000000 或 0xFF000000">
+        <div class="input-group" data-page-node-id="m2h6hLNX4Vy9seQdoGFnSL">
+          <label data-page-node-id="TrKb15fC82ebSX2oFesWA4">输入色值（如 #ff000000 或 0xFF000000）</label>
+          <input type="text" id="colorInput" placeholder="#ff000000 或 0xFF000000" data-page-node-id="EKkI3rU7nclKJ8LMPIcIfX">
         </div>
-        <div class="btn-group">
-          <button class="btn" onclick="parseColor()">解析色值</button>
+        <div class="btn-group" data-page-node-id="VziYBUrSsTeQYoOtygflvl">
+          <button class="btn" onclick="parseColor()" data-page-node-id="AKmo1RCsfl49GYrJiFMOfy">解析色值</button>
         </div>
-        <div class="result" id="colorParseResult" style="display:none;">
-          <div class="result-label">解析结果</div>
-          <div style="display:flex;align-items:center;gap:15px;">
-            <div id="colorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
-            <div>
-              <div id="colorHexValue" class="result-value"></div>
-              <div id="colorRgbaValue" style="color:#888;font-size:0.9rem;margin-top:5px;"></div>
+        <div class="result" id="colorParseResult" style="display:none;" data-page-node-id="EnR1qruEfT1zW71sOjwVEp">
+          <div class="result-label" data-page-node-id="K394QDiu3xqqo44ji8gnKK">解析结果</div>
+          <div style="display:flex;align-items:center;gap:15px;" data-page-node-id="dGLK3CQdwQ2G14Gz2ehd67">
+            <div id="colorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;" data-page-node-id="19KBVtKl5VibQBqM6kjLAr"></div>
+            <div data-page-node-id="m8wgWI7nyBrxyNPTyH34p8">
+              <div id="colorHexValue" class="result-value" data-page-node-id="R9suVifPp1AFYa7T7fUxYj"></div>
+              <div id="colorRgbaValue" style="color:#888;font-size:0.9rem;margin-top:5px;" data-page-node-id="UEjln7TTrsRkMcbHO3wrBC"></div>
             </div>
           </div>
         </div>
 
-        <hr class="divider">
+        <hr class="divider" data-page-node-id="AcetVnnKcT5OPgYOey41ZD">
 
         <!-- 透明度转换 -->
-        <h3 style="color:#555;font-size:1rem;margin-bottom:15px;">🔀 透明度转换</h3>
-        <div class="grid-2">
-          <div class="input-group">
-            <label>色值（如 #000000）</label>
-            <input type="text" id="baseColorInput" placeholder="#000000">
+        <h3 style="color:#555;font-size:1rem;margin-bottom:15px;" data-page-node-id="1pWrbkHK9IVZJCYqD95EsU">🔀 透明度转换</h3>
+        <div class="grid-2" data-page-node-id="XABpCUP1nWjLtnMM8K6Z7r">
+          <div class="input-group" data-page-node-id="PPUD1Pxvi8cMAF9k7BuSD1">
+            <label data-page-node-id="kuXpM1BXE4HpC5mZV3XHsH">色值（如 #000000）</label>
+            <input type="text" id="baseColorInput" placeholder="#000000" data-page-node-id="BjQ3GW0Mukb05AtPtGTQo6">
           </div>
         </div>
-        <div class="input-group">
-          <label>透明度</label>
-          <div style="display:flex;gap:10px;align-items:center;">
-            <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;">
-            <div class="btn-group" style="margin:0;">
-              <button class="btn btn-toggle" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;">HEX</button>
-              <button class="btn btn-toggle" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;">%</button>
+        <div class="input-group" data-page-node-id="Wn7YPKuJ5z8mUeA2ooMKKD">
+          <label data-page-node-id="x1GPVMqH61S3m8sBv62diA">透明度</label>
+          <div style="display:flex;gap:10px;align-items:center;" data-page-node-id="wNhGPVUIQL5Yi5SYHpw1tg">
+            <input type="text" id="alphaInput" placeholder="1A" style="flex:1;min-width:0;" data-page-node-id="EnmBAE32AH9pfZ9MkaFzvj">
+            <div class="btn-group" style="margin:0;" data-page-node-id="VViocknVQ5VKXL6rlIxOQY">
+              <button class="btn btn-toggle" onclick="switchAlphaType('hex')" id="btn-hex" style="padding:12px 15px;" data-page-node-id="2nBYqCCbz9vl5MLfUW88H1">HEX</button>
+              <button class="btn btn-toggle" onclick="switchAlphaType('percent')" id="btn-percent" style="padding:12px 15px;" data-page-node-id="ub5l5h9yCvHhqlugoRXJZl">%</button>
             </div>
           </div>
         </div>
-        <div class="btn-group">
-          <button class="btn" onclick="calculateAlphaColor()">计算颜色</button>
+        <div class="btn-group" data-page-node-id="guQMCtzTKOKkAOCoRxiG9M">
+          <button class="btn" onclick="calculateAlphaColor()" data-page-node-id="qABf4AMUGQZG0HLFRE3vcK">计算颜色</button>
         </div>
-        <div class="result" id="alphaResult" style="display:none;">
-          <div class="result-label">计算结果</div>
-          <div style="display:flex;align-items:center;gap:15px;">
-            <div id="alphaColorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;"></div>
-            <div>
-              <div id="alphaColorHex" class="result-value"></div>
-              <div id="alphaPercent" style="color:#28a745;font-size:0.9rem;margin-top:5px;"></div>
+        <div class="result" id="alphaResult" style="display:none;" data-page-node-id="nutgvvqupJTKaACSvOfMGY">
+          <div class="result-label" data-page-node-id="pDyexLXCqFA5mp1ikkCck6">计算结果</div>
+          <div style="display:flex;align-items:center;gap:15px;" data-page-node-id="vBA5XqCrY6m04G5I7cisvK">
+            <div id="alphaColorPreview" style="width:80px;height:80px;border-radius:10px;border:2px solid #e0e0e0;" data-page-node-id="sNVHWqJ5hoExV8rAqmPcin"></div>
+            <div data-page-node-id="Y3qeqltXgIcbpG2VrVpblr">
+              <div id="alphaColorHex" class="result-value" data-page-node-id="iDrNaGclRoXFSzNuh2TIHc"></div>
+              <div id="alphaPercent" style="color:#28a745;font-size:0.9rem;margin-top:5px;" data-page-node-id="DWkYYj2nCV21dmB3Cs0Pd1"></div>
             </div>
           </div>
-          <button class="btn copy-btn" onclick="copyColorResult()">复制色值</button>
+          <button class="btn copy-btn" onclick="copyColorResult()" data-page-node-id="nDcEsmOUmgSjMx19C9jPOt">复制色值</button>
         </div>
       </div>
     </div>
 
     <!-- ==================== JSON 工具面板 ==================== -->
-    <div id="panel-json" class="panel">
-      <div class="card">
-        <h2 style="display:flex;align-items:center;justify-content:space-between;">
-          <span>📋 JSON 格式化 / 压缩</span>
-          <span>
-            <button id="jsonThemeBtn" class="theme-toggle-btn" onclick="toggleJsonTheme()" title="切换亮色/暗色主题">☀️</button>
-            <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏编辑">⛶</button>
+    <div id="panel-json" class="panel" data-page-node-id="ujfbhn3pLvdu3MyyCdxVlS">
+      <div class="card" data-page-node-id="85aef51erq2aSRCHWapoX3">
+        <h2 style="display:flex;align-items:center;justify-content:space-between;" data-page-node-id="Cc2QspPVPDCUZmZhRt5yLU">
+          <span data-page-node-id="an57eV7EfA65xSKbiBJ46k">📋 JSON 格式化 / 压缩</span>
+          <span data-page-node-id="QkB1wqYEn0DGTTWUdUyEkk">
+            <button id="jsonFindBtn" class="theme-toggle-btn" onclick="openFind()" title="查找 (Ctrl+F)" data-page-node-id="Hb7BFFcQJRvw5HuCAHe69D">🔍</button>
+            <button id="jsonThemeBtn" class="theme-toggle-btn" onclick="toggleJsonTheme()" title="切换亮色/暗色主题" data-page-node-id="DAvUsy7SxKKHVz6gFo1Yuq">☀️</button>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏编辑" data-page-node-id="xFVR1FTjfso8AzvofY7zvL">⛶</button>
           </span>
         </h2>
-        <div class="btn-group" style="margin-bottom:12px;">
-          <button class="btn" onclick="processJson('beautify')">美化</button>
-          <button class="btn" onclick="processJson('minify')">压缩</button>
-          <button class="btn copy-btn" onclick="copyJsonContent()">复制</button>
-          <button class="btn btn-secondary" onclick="clearJson()">清空</button>
+        <div class="btn-group" style="margin-bottom:12px;" data-page-node-id="CzHriTpJL78bXp2BwwlABg">
+          <button class="btn" onclick="processJson('beautify')" data-page-node-id="zHAyAfHH7wUKH61OoMkPdm">美化</button>
+          <button class="btn" onclick="processJson('minify')" data-page-node-id="5voDdDcJIWGFvhLCR0gmlK">压缩</button>
+          <button class="btn copy-btn" onclick="copyJsonContent()" data-page-node-id="pveF16DicGVNl7qHab2866">复制</button>
+          <button class="btn" onclick="pasteJson()" data-page-node-id="Gf80nGArYiMGOBFCg91fge">粘贴</button>
+          <button class="btn" onclick="downloadJson()" data-page-node-id="bNsGx0TrkGUsKBAqjGtHCS">下载</button>
+          <button class="btn btn-secondary" onclick="clearJson()" data-page-node-id="mgfQlMVd5BBpmlpCm1EfP6">清空</button>
         </div>
-        <div class="card-body">
-        <div class="input-group">
-          <label style="display:flex;align-items:center;gap:10px;">输入 JSON
-            <span id="jsonStatus" style="color:#888;font-size:0.85rem;display:none;font-weight:400;"></span>
-            <span id="jsonInputError" class="json-error" style="display:none;font-weight:400;margin:0;"></span>
+        <div class="json-sel-hint">💡 拖选或 Shift+点击 可多行选择，Ctrl/Cmd+A 全选，再按 Cmd/Ctrl+C 或点「复制」导出所选</div>
+        <div id="jsonFindBar" class="json-find-bar" style="display:none;" data-page-node-id="KKNhPJZQpYlZsuZ6KxIskH">
+          <input id="jsonFindInput" type="text" placeholder="查找内容..." oninput="runFind()" onkeydown="findKeydown(event)" data-page-node-id="qm2StHeQPreqE1bmnuCZuv">
+          <span id="jsonFindCount" class="json-find-count" data-page-node-id="4B6ZiWcOPEjsXPUQBQezCb">0 / 0</span>
+          <button class="btn btn-secondary" onclick="findPrev()" data-page-node-id="TLMoSfy0hSBkBcBNebh2EH">上一个</button>
+          <button class="btn btn-secondary" onclick="findNext()" data-page-node-id="lIrPlv8XjjB9XPk8GXyHlI">下一个</button>
+          <button class="btn btn-secondary" onclick="closeFind()" data-page-node-id="BilVzMHg7FmmF7mwBiIZqi">关闭</button>
+        </div>
+        <div class="card-body" data-page-node-id="A2d6Wphmbhae14wNnSfLBT">
+        <div class="input-group" data-page-node-id="xZngWNcnWAeiAjK7NnrT1T">
+          <label style="display:flex;align-items:center;gap:10px;" data-page-node-id="ZY4ImWY94bpZ3zmDMZCRdL">输入 JSON
+            <span id="jsonStatus" style="color:#888;font-size:0.85rem;display:none;font-weight:400;" data-page-node-id="ACEqvQDjC4cFBmXnqIb17J"></span>
+            <span id="jsonInputError" class="json-error" style="display:none;font-weight:400;margin:0;" data-page-node-id="kAzVjSgeAXKXoJX1iqDhf0"></span>
           </label>
-          <div id="jsonEditor" class="json-editor">
-            <div id="jsonEditorLines" class="json-editor-lines"></div>
+          <div id="jsonEditor" class="json-editor" data-page-node-id="OAx186irssYnpPMmvqoMqc">
+            <div id="jsonEditorLines" class="json-editor-lines" data-page-node-id="hDO906WwHTWWLMGPVuv74o"></div>
           </div>
         </div>
         </div>
@@ -1053,21 +1107,21 @@
     </div>
 
     <!-- ==================== Markdown 预览面板 ==================== -->
-    <div id="panel-md" class="panel">
-      <div class="card" style="padding:20px 30px;">
-        <h2 style="display:flex;align-items:center;justify-content:space-between;">
-          <span>📝 Markdown 预览</span>
-          <span>
-            <button class="fullscreen-btn" onclick="toggleMdFullscreen()" title="全屏编辑">⛶</button>
+    <div id="panel-md" class="panel" data-page-node-id="rjVjouIJ5jMl2pbO6cojho">
+      <div class="card" style="padding:20px 30px;" data-page-node-id="6of2NaHygi8ESZ7rAAPXTW">
+        <h2 style="display:flex;align-items:center;justify-content:space-between;" data-page-node-id="VzleuEEd8Alif8i50qObmG">
+          <span data-page-node-id="yGvHTehZJUqVANCdamDdhW">📝 Markdown 预览</span>
+          <span data-page-node-id="EnUhHNVZe8SJuNuueotIp0">
+            <button class="fullscreen-btn" onclick="toggleMdFullscreen()" title="全屏编辑" data-page-node-id="QAfpIHgH61LEO4APQ7Md9p">⛶</button>
           </span>
         </h2>
-        <div class="btn-group" style="margin-bottom:12px;">
-          <button class="btn copy-btn" onclick="copyMdHtml()">复制 HTML</button>
-          <button class="btn btn-secondary" onclick="clearMd()">清空</button>
+        <div class="btn-group" style="margin-bottom:12px;" data-page-node-id="oJfdy7wf9gBEqAsTQOGVIY">
+          <button class="btn copy-btn" onclick="copyMdHtml()" data-page-node-id="vjQbMscQJQaQNtkSOp6cKq">复制 HTML</button>
+          <button class="btn btn-secondary" onclick="clearMd()" data-page-node-id="GL1k5EWM2h91Bu4kZ0h0mh">清空</button>
         </div>
-        <div class="md-container">
-          <div class="md-editor-pane">
-            <div class="md-pane-label">编辑</div>
+        <div class="md-container" data-page-node-id="FaOZn8zqHFmwjhJNlFEYnk">
+          <div class="md-editor-pane" data-page-node-id="SCHyd6EPA61TpS73SN17O0">
+            <div class="md-pane-label" data-page-node-id="UN1WDvN0dAjZvwv9WKJ9fw">编辑</div>
             <textarea id="mdInput" class="md-textarea" placeholder="# 输入 Markdown 内容...
 
 ## 标题
@@ -1084,9 +1138,9 @@
 console.log('代码块');
 ```"></textarea>
           </div>
-          <div class="md-preview-pane">
-            <div class="md-pane-label">预览</div>
-            <div id="mdPreview" class="md-preview"></div>
+          <div class="md-preview-pane" data-page-node-id="JWjSuFAphQ5lfqRktshM27">
+            <div class="md-pane-label" data-page-node-id="0QiXZyP0egflaiTXqXxV7H">预览</div>
+            <div id="mdPreview" class="md-preview" data-page-node-id="GDYEdmi49zs4oUZRvlbHAF"></div>
           </div>
         </div>
       </div>
@@ -1094,7 +1148,7 @@ console.log('代码块');
 
   </div>
 
-  <div class="toast" id="toast">已复制到剪贴板</div>
+  <div class="toast" id="toast" data-page-node-id="BKCwZScFT8hnDLFQ84zZK4">已复制到剪贴板</div>
 
   <script>
     // ========== 面板切换 ==========
@@ -1446,10 +1500,49 @@ console.log('代码块');
       currentColorResult = resultUpper;
     }
 
+    // ========== 剪贴板统一入口（带兜底） ==========
+    // 沙盒 iframe / 非安全上下文下 navigator.clipboard 可能不存在或被拒，
+    // 此时回退到隐藏 textarea + execCommand('copy')，再不行返回 false 交由调用方提示。
+    function copyText(text) {
+      return new Promise((resolve) => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(
+            () => resolve(true),
+            () => resolve(legacyCopy(text))
+          );
+        } else {
+          resolve(legacyCopy(text));
+        }
+      });
+    }
+
+    function legacyCopy(text) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '-9999px';
+        ta.style.left = '-9999px';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        const prevFocus = document.activeElement;
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (prevFocus && prevFocus.focus) { try { prevFocus.focus(); } catch (e) {} }
+        return !!ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
     function copyColorResult() {
       if (!currentColorResult) return;
-      navigator.clipboard.writeText(currentColorResult).then(() => {
-        showToast('色值已复制到剪贴板');
+      copyText(currentColorResult).then(ok => {
+        showToast(ok ? '色值已复制到剪贴板' : '复制失败，请手动选中后按 Cmd/Ctrl+C');
       });
     }
 
@@ -1532,8 +1625,26 @@ console.log('代码块');
       jsonLines = text ? text.split('\n') : [''];
       if (jsonLines.length === 0) jsonLines = [''];
       collapsedFolds.clear();
+      clearFindHighlights();
+      clearErrorHighlights();
+      clearLineSelection();
       renderEditor();
       applyTheme();
+    }
+
+    // 聚焦到指定行（光标置于行尾）
+    function focusLine(lineIndex) {
+      const lineEl = document.querySelector(`#jsonEditorLines .json-editor-line[data-line="${lineIndex}"]`);
+      if (!lineEl) return;
+      const contentEl = lineEl.querySelector('.json-editor-content');
+      if (!contentEl) return;
+      contentEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(contentEl);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
 
     // 处理 JSON 操作
@@ -1545,10 +1656,11 @@ console.log('代码块');
 
       errorEl.style.display = 'none';
       statusEl.style.display = 'none';
+      clearErrorHighlights();
 
       if (!input) {
         errorEl.textContent = '请输入 JSON 内容';
-        errorEl.style.display = 'block';
+        errorEl.style.display = 'inline';
         return;
       }
 
@@ -1561,35 +1673,233 @@ console.log('代码块');
           msg = '✓ 已美化';
         } else {
           result = JSON.stringify(parsed);
-          msg = `✓ 已压缩 (${new Blob([result]).size} 字节)`;
+          msg = '✓ 已压缩';
         }
 
         loadJsonText(result);
 
-        statusEl.textContent = msg;
+        const bytes = new Blob([result]).size;
+        statusEl.textContent = `${msg} · ${jsonLines.length} 行 · ${formatBytes(bytes)}`;
         statusEl.style.color = '#28a745';
-        statusEl.style.display = 'block';
+        statusEl.style.display = 'inline';
       } catch (e) {
-        const posMatch = e.message.match(/position\s+(\d+)/);
-        let errMsg = 'JSON 解析错误: ' + e.message;
-        if (posMatch && input.length > parseInt(posMatch[1])) {
-          let pos = Math.max(0, parseInt(posMatch[1]) - 1);
-          while (pos > 0 && /\s/.test(input[pos])) pos--;
-          const actualLine = input.substring(0, pos + 1).split('\n').length;
-          errMsg = `JSON 解析错误: 第 ${actualLine} 行 — ${e.message.replace(/at position \d+ \(line \d+ column \d+\)/, '').trim()}`;
-        }
-        errorEl.textContent = errMsg;
-        errorEl.style.display = 'block';
+        const line = jsonErrorLine(input, e);
+        const detail = e.message.replace(/at position \d+ \(line \d+ column \d+\)/, '').trim();
+        errorEl.textContent = line ? `✗ 第 ${line} 行：${detail}` : '✗ ' + e.message;
+        errorEl.style.display = 'inline';
+        if (line) highlightErrorLine(line);
       }
     }
 
+    // ========== 行选区（跨行选择：拖选 / Shift 点选 / Ctrl+A） ==========
+    // 每行是独立 contenteditable 编辑宿主，浏览器原生选区无法跨宿主，
+    // 只能选到一行。因此自建行级选区模型，复制时优先使用。
+    let lineSelAnchor = -1;      // Shift 点选的锚点行
+    let lineSelLo = -1;          // 选区起始行（含）
+    let lineSelHi = -1;          // 选区结束行（含）
+    let lineDragging = false;
+
+    function hasLineSelection() {
+      return lineSelLo >= 0 && lineSelHi >= lineSelLo;
+    }
+
+    function getLineSelectionText() {
+      if (!hasLineSelection()) return '';
+      return jsonLines.slice(lineSelLo, lineSelHi + 1).join('\n');
+    }
+
+    function applyLineSelectionToDOM() {
+      const linesEl = document.getElementById('jsonEditorLines');
+      if (!linesEl) return;
+      linesEl.querySelectorAll('.json-editor-line').forEach(el => {
+        const idx = parseInt(el.dataset.line);
+        const on = hasLineSelection() && idx >= lineSelLo && idx <= lineSelHi;
+        el.classList.toggle('json-selected-line', on);
+      });
+    }
+
+    function setLineSelection(lo, hi, anchor) {
+      if (lo > hi) { const t = lo; lo = hi; hi = t; }
+      lo = Math.max(0, lo);
+      hi = Math.min(jsonLines.length - 1, hi);
+      if (hi < lo) { clearLineSelection(); return; }
+      lineSelLo = lo; lineSelHi = hi;
+      if (anchor !== undefined) lineSelAnchor = anchor;
+      applyLineSelectionToDOM();
+    }
+
+    function clearLineSelection() {
+      lineSelLo = -1; lineSelHi = -1; lineSelAnchor = -1;
+      const linesEl = document.getElementById('jsonEditorLines');
+      if (linesEl) {
+        linesEl.querySelectorAll('.json-selected-line')
+          .forEach(el => el.classList.remove('json-selected-line'));
+      }
+    }
+
+    // 屏幕坐标 → 行号
+    function lineIndexFromPoint(x, y) {
+      const el = document.elementFromPoint(x, y);
+      if (!el || !el.closest) return -1;
+      const lineEl = el.closest('#jsonEditorLines .json-editor-line');
+      return lineEl ? parseInt(lineEl.dataset.line) : -1;
+    }
+
+    // 拖选（mousedown 起锚点，跨行 mousemove 扩展）+ Shift 点选
+    document.addEventListener('mousedown', function(e) {
+      const lineEl = e.target.closest ? e.target.closest('#jsonEditorLines .json-editor-line') : null;
+      if (!lineEl) return;
+      const idx = parseInt(lineEl.dataset.line);
+
+      if (e.shiftKey && lineSelAnchor >= 0) {
+        e.preventDefault();
+        setLineSelection(lineSelAnchor, idx);
+        try { window.getSelection().removeAllRanges(); } catch (err) {}
+        return;
+      }
+      // 普通按下：重置选区，以本行为新锚点，准备拖选
+      clearLineSelection();
+      lineSelAnchor = idx;
+      lineDragging = true;
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!lineDragging) return;
+      const idx = lineIndexFromPoint(e.clientX, e.clientY);
+      if (idx < 0 || idx === lineSelAnchor) return;
+      setLineSelection(lineSelAnchor, idx);
+      // 确认跨行后才屏蔽原生选择，避免影响"单行内拖选文字"
+      const editor = document.getElementById('jsonEditor');
+      if (editor) editor.classList.add('json-dragging');
+      try { window.getSelection().removeAllRanges(); } catch (err) {}
+    });
+
+    document.addEventListener('mouseup', function() {
+      lineDragging = false;
+      const editor = document.getElementById('jsonEditor');
+      if (editor) editor.classList.remove('json-dragging');
+    });
+
+    // 点击编辑器外部 → 取消行选区
+    document.addEventListener('click', function(e) {
+      if (e.target.closest && e.target.closest('#panel-json')) return;
+      if (hasLineSelection()) clearLineSelection();
+    });
+
+    // Ctrl/Cmd+A：在编辑器内时全选所有行
+    document.addEventListener('keydown', function(e) {
+      const key = (e.key || '').toLowerCase();
+      if (!(e.metaKey || e.ctrlKey) || key !== 'a') return;
+      const panel = document.getElementById('panel-json');
+      if (!panel || !panel.classList.contains('active')) return;
+      const ae = document.activeElement;
+      if (!ae || !ae.closest || !ae.closest('#jsonEditorLines')) return;
+      e.preventDefault();
+      setLineSelection(0, jsonLines.length - 1, 0);
+    });
+
+    // 智能复制：行选区 > 原生选区 > 全文
     function copyJsonContent() {
+      let text, scope;
+      if (hasLineSelection()) {
+        text = getLineSelectionText();
+        scope = `选中 ${lineSelHi - lineSelLo + 1} 行`;
+      } else {
+        const sel = window.getSelection();
+        const selText = sel ? sel.toString() : '';
+        if (selText && selText.trim()) {
+          text = selText;
+          scope = '选中内容';
+        } else {
+          syncAllLinesFromDOM();
+          text = getJsonText();
+          scope = '全部内容';
+        }
+      }
+      if (!text.trim()) { showToast('没有可复制的内容'); return; }
+      const lineCount = text.split('\n').length;
+      copyText(text).then(ok => {
+        showToast(ok
+          ? `已复制${scope}（${lineCount} 行 / ${text.length} 字符）`
+          : '复制失败，请手动选择后按 Cmd/Ctrl+C');
+      });
+    }
+
+    // Cmd/Ctrl+C：有行选区时接管。
+    // 行选区的原生 selection 为空，不接管的话按快捷键复制不到任何东西。
+    document.addEventListener('keydown', function(e) {
+      const key = (e.key || '').toLowerCase();
+      if (!(e.metaKey || e.ctrlKey) || key !== 'c') return;
+      if (!hasLineSelection()) return;
+      const panel = document.getElementById('panel-json');
+      if (!panel || !panel.classList.contains('active')) return;
+      e.preventDefault();
+      const text = getLineSelectionText();
+      const n = lineSelHi - lineSelLo + 1;
+      copyText(text).then(ok => {
+        showToast(ok ? `已复制选中 ${n} 行（${text.length} 字符）` : '复制失败，请点「复制」按钮');
+      });
+    });
+
+    // 系统「复制」命令（编辑菜单 / 右键 / 快捷键）同样走行选区
+    document.addEventListener('copy', function(e) {
+      if (!hasLineSelection()) return;
+      const text = getLineSelectionText();
+      if (!e.clipboardData) return;
+      e.clipboardData.setData('text/plain', text);
+      e.preventDefault();
+      showToast(`已复制选中 ${lineSelHi - lineSelLo + 1} 行（${text.length} 字符）`);
+    });
+
+    // 从剪贴板粘贴（按钮入口）
+    async function pasteJson() {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        try {
+          const text = await navigator.clipboard.readText();
+          importJsonText(text);
+          return;
+        } catch (e) { /* 权限被拒 → 走引导 */ }
+      }
+      // 兜底：把焦点放回编辑器，用户直接 Cmd/Ctrl+V（编辑器自带 paste 处理）
+      const first = document.querySelector('#jsonEditor .json-editor-content');
+      if (first) first.focus();
+      showToast('浏览器未授权读取剪贴板，请直接在编辑区按 Cmd/Ctrl+V');
+    }
+
+    // 统一导入管线：校验 → 尽量美化 → 载入
+    function importJsonText(text) {
+      if (text == null || !text.trim()) { showToast('剪贴板为空'); return; }
+      const raw = text.replace(/\r\n?/g, '\n');
+      try {
+        const parsed = JSON.parse(raw);
+        loadJsonText(JSON.stringify(parsed, null, 2));
+        showToast('已粘贴并格式化');
+      } catch (e) {
+        loadJsonText(raw);
+        showToast('已粘贴（内容不是合法 JSON）');
+      }
+      validateJsonLive();
+      focusLine(0);
+    }
+
+    // 下载导出为 .json 文件
+    function downloadJson() {
       syncAllLinesFromDOM();
       const text = getJsonText();
-      if (!text.trim()) { showToast('没有可复制的内容'); return; }
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('JSON 已复制到剪贴板');
-      });
+      if (!text.trim()) { showToast('没有可下载的内容'); return; }
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const name = `data-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}.json`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('已下载 ' + name);
     }
 
     function clearJson() {
@@ -1600,6 +1910,8 @@ console.log('代码块');
       applyTheme();
       document.getElementById('jsonInputError').style.display = 'none';
       document.getElementById('jsonStatus').style.display = 'none';
+      clearErrorHighlights();
+      closeFind();
     }
 
     // 折叠相关
@@ -1722,7 +2034,6 @@ console.log('代码块');
       if (!lineEl) return;
       const editorLines = contentEl.closest('.json-editor-lines');
       if (!editorLines) return;
-      const isFullscreen = !!editorLines.closest('.fullscreen-overlay');
       const lineIndex = parseInt(lineEl.dataset.line);
 
       if (e.key === 'Enter') {
@@ -1746,13 +2057,9 @@ console.log('代码块');
         jsonLines.splice(lineIndex + 1, 0, after);
         collapsedFolds = updateCollapsedAfterInsert(lineIndex + 1);
 
-        if (isFullscreen) {
-          // 在全屏模式下重新渲染
-          renderToContainer(editorLines, 'fs-line-');
-        } else {
-          renderEditor();
-          applyTheme();
-        }
+        renderEditor();
+        applyTheme();
+        validateJsonLive();
 
         // 聚焦新行
         const newLineEl = editorLines.querySelector(`.json-editor-line[data-line="${lineIndex + 1}"]`);
@@ -1789,12 +2096,9 @@ console.log('代码块');
             collapsedFolds = updateCollapsedAfterDelete(lineIndex);
             foldPairs = findFoldPairs(jsonLines.join('\n'));
 
-            if (isFullscreen) {
-              renderToContainer(editorLines, 'fs-line-');
-            } else {
-              renderEditor();
-              applyTheme();
-            }
+            renderEditor();
+            applyTheme();
+            validateJsonLive();
 
             // 聚焦上一行末尾
             const prevLineIndex = Math.max(0, lineIndex - 1);
@@ -1825,26 +2129,82 @@ console.log('代码块');
       setTimeout(() => syncLineFromDOM(lineIndex), 0);
     });
 
-    // 渲染到指定容器
-    function renderToContainer(container, idPrefix) {
-      foldPairs = findFoldPairs(jsonLines.join('\n'));
-      let html = '';
-      for (let i = 0; i < jsonLines.length; i++) {
-        const isFoldable = foldPairs[i] !== undefined;
-        const hidden = isLineHiddenByFold(i);
-        html += buildLineHtml(i, jsonLines[i], isFoldable, hidden, idPrefix);
-      }
-      container.innerHTML = html;
-    }
-
-    // 粘贴时保持纯文本
+    // 粘贴：保持纯文本，多行正确拆行并入 jsonLines
     document.addEventListener('paste', function(e) {
       const contentEl = e.target.closest('.json-editor-content');
       if (!contentEl) return;
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-      document.execCommand('insertText', false, text);
+      if (text == null) return;
+      insertPastedText(contentEl, text);
     });
+
+    // 在当前光标处插入粘贴文本（支持多行，保持行模型一致）
+    function insertPastedText(contentEl, text) {
+      const lineEl = contentEl.closest('.json-editor-line');
+      if (!lineEl) return;
+      const editorLines = contentEl.closest('.json-editor-lines');
+      const lineIndex = parseInt(lineEl.dataset.line);
+      const clean = text.replace(/\r\n?/g, '\n');
+
+      if (clean.indexOf('\n') === -1) {
+        document.execCommand('insertText', false, clean);
+        syncLineFromDOM(lineIndex);
+        return;
+      }
+
+      const fullText = contentEl.textContent || '';
+      let offset = fullText.length;
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (contentEl.contains(range.startContainer)) {
+          const pre = range.cloneRange();
+          pre.selectNodeContents(contentEl);
+          pre.setEnd(range.startContainer, range.startOffset);
+          offset = pre.toString().length;
+        }
+      }
+      const before = fullText.substring(0, offset);
+      const after = fullText.substring(offset);
+
+      const parts = clean.split('\n');
+      const firstLine = before + parts[0];
+      const lastLine = parts[parts.length - 1] + after;
+      const middle = parts.slice(1, parts.length - 1);
+
+      jsonLines[lineIndex] = firstLine;
+      jsonLines.splice(lineIndex + 1, 0, ...middle, lastLine);
+      collapsedFolds = updateCollapsedAfterInsert(lineIndex + 1);
+
+      renderEditor();
+      applyTheme();
+
+      const caretLine = lineIndex + parts.length - 1;
+      const caretOffset = parts[parts.length - 1].length;
+      setTimeout(() => {
+        const caretEl = (editorLines || document).querySelector(`.json-editor-line[data-line="${caretLine}"]`);
+        if (!caretEl) return;
+        const c = caretEl.querySelector('.json-editor-content');
+        if (c) setCaretByOffset(c, caretOffset);
+      }, 0);
+
+      validateJsonLive();
+    }
+
+    // 按字符偏移设置光标位置
+    function setCaretByOffset(contentEl, offset) {
+      contentEl.focus();
+      const node = contentEl.firstChild;
+      if (!node) return;
+      const range = document.createRange();
+      const len = (node.textContent || '').length;
+      range.setStart(node, Math.max(0, Math.min(offset, len)));
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
 
     // 插入新行后更新折叠状态
     function updateCollapsedAfterInsert(insertedAt) {
@@ -1882,12 +2242,14 @@ console.log('代码块');
       if (editor) {
         editor.classList.toggle('theme-dark', isDark);
       }
-      themeBtn.textContent = isDark ? '🌙' : '☀️';
-      themeBtn.title = isDark ? '切换亮色主题' : '切换暗色主题';
+      if (themeBtn) {
+        themeBtn.textContent = isDark ? '🌙' : '☀️';
+        themeBtn.title = isDark ? '切换亮色主题' : '切换暗色主题';
+      }
 
-      const fsOverlay = document.querySelector('.fullscreen-overlay');
-      if (fsOverlay) {
-        fsOverlay.classList.toggle('theme-dark', isDark);
+      const panel = document.getElementById('panel-json');
+      if (panel) {
+        panel.classList.toggle('json-fullscreen-dark', isDark && panel.classList.contains('json-fullscreen'));
       }
 
       try { localStorage.setItem('jsonTheme', jsonTheme); } catch(e) {}
@@ -1902,116 +2264,233 @@ console.log('代码块');
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // ========== 全屏模式 ==========
-    function toggleFullscreen() {
-      const existing = document.querySelector('.fullscreen-overlay');
+    // ========== 实时校验 ==========
+    let jsonValidateTimer = null;
 
-      if (existing) {
-        // 退出全屏：同步内容回主编辑器
-        const fsLinesEl = document.getElementById('fsEditorLines');
-        if (fsLinesEl) {
-          // 从全屏编辑器读取内容
-          const fsLineEls = fsLinesEl.querySelectorAll('.json-editor-line');
-          const fsLines = [];
-          fsLineEls.forEach(el => {
-            const contentEl = el.querySelector('.json-editor-content');
-            fsLines.push(contentEl ? (contentEl.textContent || '') : '');
-          });
-          jsonLines = fsLines.length > 0 ? fsLines : [''];
-        }
-        existing.remove();
-        // 重新渲染主编辑器
-        collapsedFolds.clear();
-        renderEditor();
-        applyTheme();
-        return;
-      }
-
-      // 进入全屏
-      syncAllLinesFromDOM();
-      const isDark = jsonTheme === 'dark';
-
-      const overlay = document.createElement('div');
-      overlay.className = 'fullscreen-overlay' + (isDark ? ' theme-dark' : '');
-      overlay.innerHTML = `
-        <div class="fullscreen-header">
-          <span>📋 JSON 全屏编辑</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button class="btn" onclick="processJsonFromFullscreen()" style="padding:6px 16px;font-size:0.9rem;">美化</button>
-            <button class="fullscreen-close" onclick="toggleFullscreen()">&times;</button>
-          </div>
-        </div>
-        <div class="json-editor${isDark ? ' theme-dark' : ''}" id="fsJsonEditor">
-          <div id="fsEditorLines" class="json-editor-lines"></div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-
-      // 渲染全屏编辑器内容
-      const fsLinesEl = document.getElementById('fsEditorLines');
-      let html = '';
-      for (let i = 0; i < jsonLines.length; i++) {
-        const isFoldable = foldPairs[i] !== undefined;
-        const isCollapsed = collapsedFolds.has(i);
-        const hidden = isLineHiddenByFold(i);
-        html += buildLineHtml(i, jsonLines[i], isFoldable, hidden, 'fs-line-');
-      }
-      fsLinesEl.innerHTML = html;
-
-      // 聚焦第一行
-      setTimeout(() => {
-        const firstContent = fsLinesEl.querySelector('.json-editor-content');
-        if (firstContent) firstContent.focus();
-      }, 50);
-
-      const escHandler = (e) => {
-        if (e.key === 'Escape') { toggleFullscreen(); }
-      };
-      document.addEventListener('keydown', escHandler, { once: true });
+    function formatBytes(n) {
+      return n < 1024 ? n + ' B' : (n / 1024).toFixed(1) + ' KB';
     }
 
-    function processJsonFromFullscreen() {
-      // 从全屏编辑器同步内容
-      const fsLinesEl = document.getElementById('fsEditorLines');
-      if (!fsLinesEl) return;
-      const fsLineEls = fsLinesEl.querySelectorAll('.json-editor-line');
-      const lines = [];
-      fsLineEls.forEach(el => {
-        const contentEl = el.querySelector('.json-editor-content');
-        lines.push(contentEl ? (contentEl.textContent || '') : '');
-      });
-      const input = lines.join('\n').trim();
+    // 由 parse 错误定位到行号（1-based），失败返回 null
+    function jsonErrorLine(input, err) {
+      const msg = (err && err.message) ? err.message : '';
+      // V8 有时直接给出 (line N column M)
+      const lineMatch = msg.match(/line\s+(\d+)\s+column\s+(\d+)/);
+      if (lineMatch) return parseInt(lineMatch[1]);
+      // 否则用 position 换算；旧版 V8 才有此格式
+      const posMatch = msg.match(/position\s+(\d+)/);
+      if (!posMatch) return null;
+      let pos = Math.max(0, parseInt(posMatch[1]));
+      if (pos > input.length) pos = input.length;
+      return input.substring(0, pos).split('\n').length;
+    }
 
-      if (!input) {
-        alert('请输入 JSON 内容');
+    function clearErrorHighlights() {
+      document.querySelectorAll('#jsonEditorLines .json-editor-error-line')
+        .forEach(el => el.classList.remove('json-editor-error-line'));
+    }
+
+    function highlightErrorLine(line) {
+      const el = document.querySelector(`#jsonEditorLines .json-editor-line[data-line="${line - 1}"]`);
+      if (el) el.classList.add('json-editor-error-line');
+    }
+
+    // 折叠箭头随编辑实时刷新（不重渲染，保留光标）
+    function refreshFoldArrows() {
+      foldPairs = findFoldPairs(jsonLines.join('\n'));
+      const linesEl = document.getElementById('jsonEditorLines');
+      if (!linesEl) return;
+      linesEl.querySelectorAll('.json-editor-line').forEach(el => {
+        const idx = parseInt(el.dataset.line);
+        const foldEl = el.querySelector('.json-editor-fold');
+        if (!foldEl) return;
+        foldEl.classList.toggle('can-fold', foldPairs[idx] !== undefined);
+        foldEl.dataset.open = idx;
+      });
+    }
+
+    function validateJsonLive() {
+      const statusEl = document.getElementById('jsonStatus');
+      const errorEl = document.getElementById('jsonInputError');
+      if (!statusEl || !errorEl) return;
+      const text = getJsonText();
+      clearErrorHighlights();
+
+      if (!text.trim()) {
+        statusEl.style.display = 'none';
+        errorEl.style.display = 'none';
         return;
       }
+
+      const bytes = new Blob([text]).size;
       try {
-        const parsed = JSON.parse(input);
-        const result = JSON.stringify(parsed, null, 2);
-        const resultLines = result.split('\n');
-
-        // 更新全屏编辑器
-        const newFoldPairs = findFoldPairs(result);
-        let html = '';
-        for (let i = 0; i < resultLines.length; i++) {
-          const isFoldable = newFoldPairs[i] !== undefined;
-          html += buildLineHtml(i, resultLines[i], isFoldable, false, 'fs-line-');
-        }
-        fsLinesEl.innerHTML = html;
-
-        // 同步状态
-        jsonLines = resultLines;
-        foldPairs = newFoldPairs;
-        collapsedFolds.clear();
-
-        // 聚焦第一行
-        setTimeout(() => {
-          const firstContent = fsLinesEl.querySelector('.json-editor-content');
-          if (firstContent) firstContent.focus();
-        }, 50);
+        JSON.parse(text);
+        errorEl.style.display = 'none';
+        statusEl.textContent = `✓ 有效 · ${jsonLines.length} 行 · ${formatBytes(bytes)}`;
+        statusEl.style.color = '#28a745';
+        statusEl.style.display = 'inline';
       } catch (e) {
-        alert('JSON 解析错误: ' + e.message);
+        statusEl.style.display = 'none';
+        const line = jsonErrorLine(text, e);
+        errorEl.textContent = line ? `✗ 第 ${line} 行` : '✗ 无效 JSON';
+        errorEl.style.display = 'inline';
+        if (line) highlightErrorLine(line);
+      }
+    }
+
+    // ========== 查找（行级高亮） ==========
+    let findMatches = [];
+    let findIndex = -1;
+
+    function openFind() {
+      const bar = document.getElementById('jsonFindBar');
+      if (!bar) return;
+      bar.style.display = 'flex';
+      const input = document.getElementById('jsonFindInput');
+      if (input) { input.focus(); input.select(); }
+      runFind();
+    }
+
+    function closeFind() {
+      const bar = document.getElementById('jsonFindBar');
+      if (bar) bar.style.display = 'none';
+      const input = document.getElementById('jsonFindInput');
+      if (input) input.value = '';
+      clearFindHighlights();
+      findMatches = [];
+      findIndex = -1;
+      updateFindCount();
+    }
+
+    function clearFindHighlights() {
+      document.querySelectorAll('#jsonEditorLines .json-editor-match-line, #jsonEditorLines .json-editor-match-current')
+        .forEach(el => el.classList.remove('json-editor-match-line', 'json-editor-match-current'));
+    }
+
+    function updateFindCount() {
+      const count = document.getElementById('jsonFindCount');
+      if (!count) return;
+      count.textContent = findMatches.length ? `${findIndex + 1} / ${findMatches.length}` : '0 / 0';
+    }
+
+    function runFind() {
+      syncAllLinesFromDOM();
+      clearFindHighlights();
+      const input = document.getElementById('jsonFindInput');
+      const q = input ? input.value : '';
+      findMatches = [];
+      findIndex = -1;
+      if (!q) { updateFindCount(); return; }
+
+      const needle = q.toLowerCase();
+      document.querySelectorAll('#jsonEditorLines .json-editor-line').forEach(el => {
+        const idx = parseInt(el.dataset.line);
+        if ((jsonLines[idx] || '').toLowerCase().indexOf(needle) !== -1) {
+          findMatches.push(idx);
+          el.classList.add('json-editor-match-line');
+        }
+      });
+
+      if (findMatches.length) { findIndex = 0; applyCurrentMatch(); }
+      updateFindCount();
+    }
+
+    function applyCurrentMatch() {
+      document.querySelectorAll('#jsonEditorLines .json-editor-match-current')
+        .forEach(el => el.classList.remove('json-editor-match-current'));
+      if (findIndex < 0 || findIndex >= findMatches.length) return;
+      const el = document.querySelector(`#jsonEditorLines .json-editor-line[data-line="${findMatches[findIndex]}"]`);
+      if (el) {
+        el.classList.add('json-editor-match-current');
+        el.scrollIntoView({ block: 'center' });
+      }
+    }
+
+    function findNext() {
+      if (!findMatches.length) { runFind(); return; }
+      findIndex = (findIndex + 1) % findMatches.length;
+      applyCurrentMatch();
+      updateFindCount();
+    }
+
+    function findPrev() {
+      if (!findMatches.length) { runFind(); return; }
+      findIndex = (findIndex - 1 + findMatches.length) % findMatches.length;
+      applyCurrentMatch();
+      updateFindCount();
+    }
+
+    function findKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (e.shiftKey) findPrev(); else findNext();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        closeFind();
+      }
+    }
+
+    // 编辑区输入：300ms 防抖做实时校验 + 折叠刷新
+    document.addEventListener('input', function(e) {
+      const contentEl = e.target.closest ? e.target.closest('.json-editor-content') : null;
+      if (!contentEl) return;
+      const lineEl = contentEl.closest('.json-editor-line');
+      if (lineEl) syncLineFromDOM(parseInt(lineEl.dataset.line));
+      clearTimeout(jsonValidateTimer);
+      jsonValidateTimer = setTimeout(function() {
+        refreshFoldArrows();
+        validateJsonLive();
+      }, 300);
+    });
+
+    // Ctrl/Cmd+F 调用查找（仅 JSON 面板激活时）
+    document.addEventListener('keydown', function(e) {
+      const key = (e.key || '').toLowerCase();
+      if ((e.metaKey || e.ctrlKey) && key === 'f') {
+        const panel = document.getElementById('panel-json');
+        if (panel && panel.classList.contains('active')) {
+          e.preventDefault();
+          openFind();
+        }
+      }
+    });
+
+    // ========== 全屏模式（同一实例 CSS 放大，不复制 DOM） ==========
+    function toggleFullscreen() {
+      const panel = document.getElementById('panel-json');
+      if (!panel) return;
+      if (panel.classList.contains('json-fullscreen')) {
+        exitFullscreen();
+      } else {
+        enterFullscreen();
+      }
+    }
+
+    function enterFullscreen() {
+      const panel = document.getElementById('panel-json');
+      if (!panel) return;
+      syncAllLinesFromDOM();
+      panel.classList.add('json-fullscreen');
+      panel.classList.toggle('json-fullscreen-dark', jsonTheme === 'dark');
+      document.body.classList.add('json-fullscreen-lock');
+      document.addEventListener('keydown', fullscreenKeyHandler);
+    }
+
+    function exitFullscreen() {
+      const panel = document.getElementById('panel-json');
+      if (!panel) return;
+      panel.classList.remove('json-fullscreen');
+      panel.classList.remove('json-fullscreen-dark');
+      document.body.classList.remove('json-fullscreen-lock');
+      document.removeEventListener('keydown', fullscreenKeyHandler);
+      applyTheme();
+    }
+
+    function fullscreenKeyHandler(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        exitFullscreen();
       }
     }
 
@@ -2019,15 +2498,15 @@ console.log('代码块');
     function copyTimestamp() {
       const ts = document.getElementById('currentTimestamp').textContent;
       if (ts === '-') return;
-      navigator.clipboard.writeText(ts).then(() => {
-        showToast('时间戳已复制: ' + ts);
+      copyText(ts).then(ok => {
+        showToast(ok ? '时间戳已复制: ' + ts : '复制失败，请手动选中后按 Cmd/Ctrl+C');
       });
     }
 
     function copyResult(elementId) {
       const text = document.getElementById(elementId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('已复制到剪贴板');
+      copyText(text).then(ok => {
+        showToast(ok ? '已复制到剪贴板' : '复制失败，请手动选中后按 Cmd/Ctrl+C');
       });
     }
 
@@ -2078,8 +2557,8 @@ console.log('代码块');
       const input = document.getElementById('mdInput').value.trim();
       if (!input) { showToast('没有可复制的内容'); return; }
       const html = marked.parse(input);
-      navigator.clipboard.writeText(html).then(() => {
-        showToast('HTML 已复制到剪贴板');
+      copyText(html).then(ok => {
+        showToast(ok ? 'HTML 已复制到剪贴板' : '复制失败，请手动选中后按 Cmd/Ctrl+C');
       });
     }
 
