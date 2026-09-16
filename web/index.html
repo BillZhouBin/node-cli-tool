@@ -694,6 +694,46 @@
       font-weight: 600;
     }
 
+    /* 导入文件的文件名提示 */
+    .md-file-name {
+      margin-left: 6px;
+      color: #667eea;
+      font-weight: 400;
+      font-size: 0.75rem;
+      text-transform: none;
+      letter-spacing: 0;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+
+    /* 拖拽导入：编辑器区域 */
+    .md-editor-pane {
+      position: relative;
+    }
+
+    .md-drop-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #667eea;
+      border-radius: 10px;
+      background: rgba(245, 247, 255, 0.95);
+      color: #667eea;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .md-editor-pane.md-drop-active .md-drop-overlay { display: flex; }
+
     .md-textarea {
       flex: 1;
       min-height: 0;
@@ -1116,12 +1156,14 @@
           </span>
         </h2>
         <div class="btn-group" style="margin-bottom:12px;" data-page-node-id="oJfdy7wf9gBEqAsTQOGVIY">
+          <button class="btn" onclick="importMdFile()" title="导入本地 Markdown 文件">📂 导入文件</button>
           <button class="btn copy-btn" onclick="copyMdHtml()" data-page-node-id="vjQbMscQJQaQNtkSOp6cKq">复制 HTML</button>
           <button class="btn btn-secondary" onclick="clearMd()" data-page-node-id="GL1k5EWM2h91Bu4kZ0h0mh">清空</button>
+          <input type="file" id="mdFileInput" accept=".md,.markdown,.mdown,.mkd,.txt" style="display:none;">
         </div>
         <div class="md-container" data-page-node-id="FaOZn8zqHFmwjhJNlFEYnk">
           <div class="md-editor-pane" data-page-node-id="SCHyd6EPA61TpS73SN17O0">
-            <div class="md-pane-label" data-page-node-id="UN1WDvN0dAjZvwv9WKJ9fw">编辑</div>
+            <div class="md-pane-label" data-page-node-id="UN1WDvN0dAjZvwv9WKJ9fw">编辑<span id="mdFileName" class="md-file-name"></span></div>
             <textarea id="mdInput" class="md-textarea" placeholder="# 输入 Markdown 内容...
 
 ## 标题
@@ -1137,6 +1179,7 @@
 ```js
 console.log('代码块');
 ```"></textarea>
+            <div class="md-drop-overlay">📂 松开导入 Markdown 文件</div>
           </div>
           <div class="md-preview-pane" data-page-node-id="JWjSuFAphQ5lfqRktshM27">
             <div class="md-pane-label" data-page-node-id="0QiXZyP0egflaiTXqXxV7H">预览</div>
@@ -2565,7 +2608,86 @@ console.log('代码块');
     function clearMd() {
       document.getElementById('mdInput').value = '';
       document.getElementById('mdPreview').innerHTML = '<div style="color:#aaa;text-align:center;padding-top:60px;">在左侧输入 Markdown 内容即可预览</div>';
+      setMdFileName('');
     }
+
+    // 导入本地 MD 文件（文件选择器与拖拽共用同一套加载逻辑）
+    const MD_FILE_MAX_SIZE = 5 * 1024 * 1024; // 5MB，避免浏览器渲染卡顿
+    const MD_FILE_EXTS = ['.md', '.markdown', '.mdown', '.mkd', '.txt'];
+
+    function importMdFile() {
+      const fileInput = document.getElementById('mdFileInput');
+      if (fileInput) fileInput.click();
+    }
+
+    function setMdFileName(name) {
+      const el = document.getElementById('mdFileName');
+      if (el) el.textContent = name ? ' · ' + name : '';
+    }
+
+    function importMdFileContent(file) {
+      if (!file) return;
+      if (file.size > MD_FILE_MAX_SIZE) {
+        showToast('文件过大，仅支持 5MB 以内的文件');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function() {
+        // 去掉 Windows 文件常见的 BOM
+        document.getElementById('mdInput').value = String(reader.result).replace(/^\uFEFF/, '');
+        setMdFileName(file.name);
+        renderMd();
+        showToast('已导入: ' + file.name);
+      };
+      reader.onerror = function() {
+        showToast('文件读取失败，请重试');
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    document.getElementById('mdFileInput').addEventListener('change', function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      e.target.value = ''; // 复位，允许再次导入同一文件
+      importMdFileContent(file);
+    });
+
+    // 拖拽导入：把本地 .md 文件拖进编辑器区域
+    (function bindMdDrop() {
+      const pane = document.querySelector('.md-editor-pane');
+      if (!pane) return;
+
+      // 仅处理“文件”拖拽；纯文本拖放保持 textarea 的原生行为
+      const draggingFiles = function(dt) {
+        if (!dt || !dt.types) return false;
+        return Array.prototype.indexOf.call(dt.types, 'Files') !== -1;
+      };
+
+      pane.addEventListener('dragover', function(e) {
+        if (!draggingFiles(e.dataTransfer)) return;
+        e.preventDefault(); // 允许放置
+        e.dataTransfer.dropEffect = 'copy';
+        pane.classList.add('md-drop-active');
+      });
+
+      pane.addEventListener('dragleave', function(e) {
+        if (e.relatedTarget && pane.contains(e.relatedTarget)) return; // 在子元素间移动
+        pane.classList.remove('md-drop-active');
+      });
+
+      pane.addEventListener('drop', function(e) {
+        if (!draggingFiles(e.dataTransfer)) return;
+        e.preventDefault(); // 阻止浏览器把文件当链接打开
+        pane.classList.remove('md-drop-active');
+        const files = Array.prototype.slice.call(e.dataTransfer.files || []);
+        const file = files.find(f => MD_FILE_EXTS.some(ext => f.name.toLowerCase().endsWith(ext)));
+        if (!file) {
+          showToast('请拖入 .md / .markdown / .txt 文件');
+          return;
+        }
+        importMdFileContent(file);
+      });
+    })();
 
     // 全屏预览
     function toggleMdFullscreen() {
