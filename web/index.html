@@ -1120,11 +1120,12 @@
           <button class="btn" onclick="processJson('beautify')" data-page-node-id="zHAyAfHH7wUKH61OoMkPdm">美化</button>
           <button class="btn" onclick="processJson('minify')" data-page-node-id="5voDdDcJIWGFvhLCR0gmlK">压缩</button>
           <button class="btn copy-btn" onclick="copyJsonContent()" data-page-node-id="pveF16DicGVNl7qHab2866">复制</button>
+          <button class="btn btn-secondary" onclick="deleteSelectedLines()" title="删除已框选的整行（自由选段请拖拽选中后直接按 Delete / Backspace）">删除所选行</button>
           <button class="btn" onclick="pasteJson()" data-page-node-id="Gf80nGArYiMGOBFCg91fge">粘贴</button>
           <button class="btn" onclick="downloadJson()" data-page-node-id="bNsGx0TrkGUsKBAqjGtHCS">下载</button>
           <button class="btn btn-secondary" onclick="clearJson()" data-page-node-id="mgfQlMVd5BBpmlpCm1EfP6">清空</button>
         </div>
-        <div class="json-sel-hint">💡 拖选或 Shift+点击 可多行选择，Ctrl/Cmd+A 全选，再按 Cmd/Ctrl+C 或点「复制」导出所选</div>
+        <div class="json-sel-hint">💡 拖拽可自由选段（支持跨行），按 Delete / Backspace 删除；行号区拖拽或 Shift+点击 = 整行选择，Ctrl/Cmd+A 全选</div>
         <div id="jsonFindBar" class="json-find-bar" style="display:none;" data-page-node-id="KKNhPJZQpYlZsuZ6KxIskH">
           <input id="jsonFindInput" type="text" placeholder="查找内容..." oninput="runFind()" onkeydown="findKeydown(event)" data-page-node-id="qm2StHeQPreqE1bmnuCZuv">
           <span id="jsonFindCount" class="json-find-count" data-page-node-id="4B6ZiWcOPEjsXPUQBQezCb">0 / 0</span>
@@ -1734,9 +1735,10 @@ console.log('代码块');
       }
     }
 
-    // ========== 行选区（跨行选择：拖选 / Shift 点选 / Ctrl+A） ==========
-    // 每行是独立 contenteditable 编辑宿主，浏览器原生选区无法跨宿主，
-    // 只能选到一行。因此自建行级选区模型，复制时优先使用。
+    // ========== 行选区（整行选择：行号区拖选 / Shift 点选 / Ctrl+A） ==========
+    // 内容区拖拽默认走浏览器原生自由选段（可跨行）；但原生选区在跨宿主删除等
+    // 编辑操作上不可靠，故另建行级选区模型处理"整行"操作。复制优先级：
+    // 行选区 > 原生选区 > 全文。
     let lineSelAnchor = -1;      // Shift 点选的锚点行
     let lineSelLo = -1;          // 选区起始行（含）
     let lineSelHi = -1;          // 选区结束行（含）
@@ -1788,30 +1790,46 @@ console.log('代码块');
       return lineEl ? parseInt(lineEl.dataset.line) : -1;
     }
 
-    // 拖选（mousedown 起锚点，跨行 mousemove 扩展）+ Shift 点选
+    // 选择交互：内容区拖拽 = 原生自由选段（可跨行选任意片段）；
+    // 行号区（gutter）拖拽 / Shift+点击 = 整行选择。
     document.addEventListener('mousedown', function(e) {
       const lineEl = e.target.closest ? e.target.closest('#jsonEditorLines .json-editor-line') : null;
       if (!lineEl) return;
+
+      // 折叠箭头：交给折叠点击逻辑，不参与选择
+      if (e.target.closest && e.target.closest('.json-editor-fold')) return;
+
       const idx = parseInt(lineEl.dataset.line);
 
+      // Shift+点击：以原锚点做整行范围选择
       if (e.shiftKey && lineSelAnchor >= 0) {
         e.preventDefault();
         setLineSelection(lineSelAnchor, idx);
         try { window.getSelection().removeAllRanges(); } catch (err) {}
         return;
       }
-      // 普通按下：重置选区，以本行为新锚点，准备拖选
+
+      // 从行号区按下：整行拖选
+      if (e.target.closest && e.target.closest('.json-editor-gutter')) {
+        e.preventDefault();
+        clearLineSelection();
+        lineSelAnchor = idx;
+        lineDragging = true;
+        setLineSelection(idx, idx);
+        return;
+      }
+
+      // 内容区普通按下：不劫持，交给浏览器原生自由选段
       clearLineSelection();
-      lineSelAnchor = idx;
-      lineDragging = true;
+      lineSelAnchor = idx;   // 记录锚点，供之后 Shift+点击做整行范围选择
+      lineDragging = false;
     });
 
     document.addEventListener('mousemove', function(e) {
-      if (!lineDragging) return;
+      if (!lineDragging) return;   // 仅行号区拖拽才做整行选择
       const idx = lineIndexFromPoint(e.clientX, e.clientY);
-      if (idx < 0 || idx === lineSelAnchor) return;
+      if (idx < 0) return;
       setLineSelection(lineSelAnchor, idx);
-      // 确认跨行后才屏蔽原生选择，避免影响"单行内拖选文字"
       const editor = document.getElementById('jsonEditor');
       if (editor) editor.classList.add('json-dragging');
       try { window.getSelection().removeAllRanges(); } catch (err) {}
@@ -1828,6 +1846,129 @@ console.log('代码块');
       if (e.target.closest && e.target.closest('#panel-json')) return;
       if (hasLineSelection()) clearLineSelection();
     });
+
+    // ========== 删除已框选的整段行 ==========
+    // 框选若干行（拖选 / Shift+点击 / Ctrl+A）后，按 Delete / Backspace 即删除 [lo, hi]。
+    function deleteSelectedLines() {
+      const lo = lineSelLo, hi = lineSelHi;
+      if (lo < 0 || hi < lo) return;
+
+      // 删除后聚焦到原选区上方的相邻行（选区从首行起则聚焦首行）
+      const focusIdx = lo > 0 ? lo - 1 : 0;
+
+      // 从真源 jsonLines 移除所选行
+      jsonLines.splice(lo, hi - lo + 1);
+      if (jsonLines.length === 0) jsonLines = [''];
+
+      // 折叠状态随行号平移（被删区间内的折叠直接丢弃）
+      collapsedFolds = updateCollapsedAfterDeleteRange(lo, hi - lo + 1);
+      foldPairs = findFoldPairs(jsonLines.join('\n'));
+
+      clearLineSelection();
+      renderEditor();
+      applyTheme();
+      validateJsonLive();
+
+      // 重新渲染后 DOM 已重建，需重新聚焦
+      const targetIdx = Math.min(focusIdx, jsonLines.length - 1);
+      focusLineAt(targetIdx, true);
+    }
+
+    // 聚焦到指定行：atEnd=true 定位行尾，否则行首
+    function focusLineAt(lineIndex, atEnd) {
+      const lineEl = document.querySelector(`#jsonEditorLines .json-editor-line[data-line="${lineIndex}"]`);
+      if (!lineEl) return;
+      const contentEl = lineEl.querySelector('.json-editor-content');
+      if (!contentEl) return;
+      contentEl.focus();
+      const range = document.createRange();
+      range.selectNodeContents(contentEl);
+      range.collapse(!atEnd); // atEnd=true → 折叠到末尾
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    // ========== 原生自由选段（可跨行片段）的读取与删除 ==========
+    // DOM 节点 → 所在行元素
+    function nodeToLineEl(node) {
+      const el = node && node.nodeType === 3 ? node.parentElement : node;
+      return el && el.closest ? el.closest('#jsonEditorLines .json-editor-line') : null;
+    }
+
+    // 计算 (container, offset) 在某个 contenteditable 内的字符偏移
+    function offsetInContent(contentEl, container, offset) {
+      try {
+        const r = document.createRange();
+        r.selectNodeContents(contentEl);
+        r.setEnd(container, offset);
+        return r.toString().length;
+      } catch (err) {
+        return 0;
+      }
+    }
+
+    // 读取当前原生选区 → { startLine, startOffset, endLine, endOffset }；
+    // 非编辑器内或折叠选区返回 null。
+    function getNativeRangeInfo() {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+      const range = sel.getRangeAt(0);
+      const linesEl = document.getElementById('jsonEditorLines');
+      if (!linesEl) return null;
+      if (!linesEl.contains(range.startContainer) || !linesEl.contains(range.endContainer)) return null;
+
+      const startLineEl = nodeToLineEl(range.startContainer);
+      const endLineEl = nodeToLineEl(range.endContainer);
+      if (!startLineEl || !endLineEl) return null;
+
+      const startContent = startLineEl.querySelector('.json-editor-content');
+      const endContent = endLineEl.querySelector('.json-editor-content');
+      if (!startContent || !endContent) return null;
+
+      return {
+        startLine: parseInt(startLineEl.dataset.line),
+        endLine: parseInt(endLineEl.dataset.line),
+        startOffset: offsetInContent(startContent, range.startContainer, range.startOffset),
+        endOffset: offsetInContent(endContent, range.endContainer, range.endOffset)
+      };
+    }
+
+    // 删除原生自由选中的片段（可跨行）：合并「起始行前半 + 结束行后半」，中间整行移除
+    function deleteNativeFragment(info) {
+      const { startLine, endLine, startOffset, endOffset } = info;
+      if (startLine === endLine && startOffset === endOffset) return;
+
+      // 先与 DOM 对齐，避免行内容未同步导致偏移错位
+      syncAllLinesFromDOM();
+
+      const firstText = (jsonLines[startLine] || '').slice(0, startOffset);
+      const lastText = (jsonLines[endLine] || '').slice(endOffset);
+      const merged = firstText + lastText;
+
+      jsonLines.splice(startLine, endLine - startLine + 1, merged);
+      if (jsonLines.length === 0) jsonLines = [''];
+
+      collapsedFolds = updateCollapsedAfterDeleteRange(startLine, endLine - startLine + 1);
+      foldPairs = findFoldPairs(jsonLines.join('\n'));
+
+      clearLineSelection();
+      renderEditor();
+      applyTheme();
+      validateJsonLive();
+
+      focusLineAtOffset(startLine, firstText.length);
+    }
+
+    // 聚焦到指定行的指定字符偏移
+    function focusLineAtOffset(lineIndex, offset) {
+      const lineEl = document.querySelector(`#jsonEditorLines .json-editor-line[data-line="${lineIndex}"]`);
+      if (!lineEl) return;
+      const contentEl = lineEl.querySelector('.json-editor-content');
+      if (!contentEl) return;
+      contentEl.focus();
+      setCaretByOffset(contentEl, offset);
+    }
 
     // Ctrl/Cmd+A：在编辑器内时全选所有行
     document.addEventListener('keydown', function(e) {
@@ -2071,6 +2212,29 @@ console.log('代码块');
 
     // 处理编辑器的键盘输入
     document.addEventListener('keydown', function(e) {
+      // 行选区删除：已框选若干行时，Delete / Backspace 整段删除
+      if ((e.key === 'Delete' || e.key === 'Backspace') && hasLineSelection()) {
+        const panel = document.getElementById('panel-json');
+        if (panel && panel.classList.contains('active')) {
+          e.preventDefault();
+          deleteSelectedLines();
+          return;
+        }
+      }
+
+      // 原生自由选区（含跨行片段）删除：Delete / Backspace 合并首尾两行
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const panel = document.getElementById('panel-json');
+        if (panel && panel.classList.contains('active')) {
+          const info = getNativeRangeInfo();
+          if (info) {
+            e.preventDefault();
+            deleteNativeFragment(info);
+            return;
+          }
+        }
+      }
+
       const contentEl = e.target.closest('.json-editor-content');
       if (!contentEl) return;
       const lineEl = contentEl.closest('.json-editor-line');
@@ -2270,6 +2434,20 @@ console.log('代码块');
         } else if (openLine < deletedAt) {
           newSet.add(openLine);
         }
+      }
+      return newSet;
+    }
+
+    // 删除一个行区间 [start, start+count) 后，平移折叠状态
+    function updateCollapsedAfterDeleteRange(start, count) {
+      const newSet = new Set();
+      for (const openLine of collapsedFolds) {
+        if (openLine < start) {
+          newSet.add(openLine);                 // 在删除区间之前：不变
+        } else if (openLine > start + count - 1) {
+          newSet.add(openLine - count);         // 在删除区间之后：上移 count
+        }
+        // 落在被删区间内：丢弃其折叠状态
       }
       return newSet;
     }
