@@ -580,6 +580,121 @@
       margin: -4px 0 10px;
     }
 
+    /* ===== JSON 工具栏（分组 + 紧凑） ===== */
+    .json-head-actions { display:flex; align-items:center; gap:6px; }
+
+    .json-view-btn {
+      background:#fff; border:1px solid #d0d0d0; color:#555;
+      padding:5px 10px; border-radius:6px; font-size:0.82rem;
+      cursor:pointer; line-height:1.3; transition:all .15s;
+    }
+    .json-view-btn:hover { border-color:#667eea; color:#667eea; }
+    .json-view-btn.active { background:#667eea; border-color:#667eea; color:#fff; }
+
+    .json-toolbar {
+      display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+      margin-bottom:10px;
+    }
+    .json-tool-group {
+      display:flex; align-items:center; gap:6px; flex-shrink:0;
+      padding-right:8px; border-right:1px solid #e8e8e8;
+    }
+    .json-tool-group:last-child { border-right:none; padding-right:0; }
+
+    .json-tool-icon {
+      width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center;
+      background:#fff; border:1px solid #d0d0d0; border-radius:6px;
+      color:#555; font-size:15px; cursor:pointer; line-height:1; padding:0;
+    }
+    .json-tool-icon:hover:not(:disabled) { border-color:#667eea; color:#667eea; }
+    .json-tool-icon:disabled { opacity:.35; cursor:default; }
+
+    .json-tool-label { font-size:0.8rem; color:#888; white-space:nowrap; flex-shrink:0; }
+    .json-indent-select {
+      width:auto; min-width:96px;
+      padding:6px 8px; border:1px solid #d0d0d0; border-radius:6px;
+      background:#fff; color:#444; font-size:0.82rem; cursor:pointer;
+    }
+
+    /* ===== JSON 双栏（左编辑 / 右实时预览） ===== */
+    .json-editor-wrap { display:flex; gap:12px; align-items:stretch; }
+    .json-editor-wrap .json-edit-col { flex:1 1 0; min-width:0; margin-bottom:0; }
+    .json-preview-col { flex:1 1 0; min-width:0; margin-bottom:0; }
+    .json-preview { flex:none; height:420px; }
+    .json-preview-meta { color:#999; font-size:0.8rem; font-weight:400; }
+
+    /* 拖拽导入覆盖层 */
+    .json-drop-overlay {
+      display:none; position:absolute; inset:0;
+      align-items:center; justify-content:center;
+      background:rgba(102,126,234,.12); border:2px dashed #667eea;
+      border-radius:10px; color:#4a5cc7; font-size:0.95rem; font-weight:500;
+      pointer-events:none; z-index:5;
+    }
+    .json-editor.json-drop-active .json-drop-overlay { display:flex; }
+
+    /* ===== JSON 类型定义弹层 ===== */
+    .json-type-modal {
+      position:fixed; inset:0; z-index:10000;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.45);
+    }
+    .json-type-dialog {
+      width:min(860px, 92vw); max-height:84vh;
+      display:flex; flex-direction:column;
+      background:#fff; border-radius:12px; overflow:hidden;
+      box-shadow:0 12px 48px rgba(0,0,0,.25);
+    }
+    .json-type-head {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 20px; border-bottom:1px solid #eee; gap:12px;
+    }
+    .json-type-title { font-size:1rem; font-weight:500; color:#333; white-space:nowrap; flex-shrink:0; }
+    .json-type-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .json-type-actions .btn,
+    .json-type-actions select { white-space:nowrap; flex-shrink:0; }
+    .json-type-actions .json-indent-select { min-width:120px; }
+    .json-type-output {
+      margin:0; padding:18px 20px; overflow:auto; flex:1;
+      font-family:'Monaco','Menlo','Ubuntu Mono',monospace; font-size:13px; line-height:1.7;
+      color:#333; background:#fafafa; white-space:pre; tab-size:2;
+    }
+
+    /* 双栏预览行（独立 class，避免触发编辑器事件处理） */
+    .json-preview-lines { min-height:100%; }
+    .json-preview-row { display:flex; align-items:baseline; min-height:1.6em; white-space:pre; }
+    .json-preview-num {
+      flex-shrink:0; width:44px; text-align:right; padding-right:10px;
+      color:#bbb; font-size:12px; user-select:none; box-sizing:border-box;
+    }
+    .json-preview-text { white-space:pre; color:#333; }
+    .json-preview-error {
+      padding:14px 16px; color:#c0392b;
+      font-family:'Monaco','Menlo','Ubuntu Mono',monospace;
+      font-size:13px; line-height:1.6; white-space:pre-wrap;
+    }
+    .json-theme-dark .json-preview-num { color:#6e6e6e; }
+    .json-theme-dark .json-preview-text { color:#d4d4d4; }
+    .json-theme-dark .json-preview-error { color:#f09595; }
+
+    /* JSON 工具栏 / 双栏 / 弹层：暗色主题 */
+    .json-theme-dark .json-view-btn { background:#252526; border-color:#3c3c3c; color:#bbb; }
+    .json-theme-dark .json-view-btn:hover { border-color:#7f9cf5; color:#b5c7ff; }
+    .json-theme-dark .json-view-btn.active { background:#4a5cc7; border-color:#4a5cc7; color:#fff; }
+    .json-theme-dark .json-tool-icon { background:#252526; border-color:#3c3c3c; color:#bbb; }
+    .json-theme-dark .json-tool-icon:hover:not(:disabled) { border-color:#7f9cf5; color:#b5c7ff; }
+    .json-theme-dark .json-indent-select { background:#252526; border-color:#3c3c3c; color:#ccc; }
+    .json-theme-dark .json-tool-group { border-right-color:#333; }
+    .json-theme-dark .json-tool-label { color:#888; }
+    .json-theme-dark .json-preview-meta { color:#888; }
+    .json-theme-dark .json-drop-overlay {
+      background:rgba(102,126,234,.2); border-color:#7f9cf5; color:#b5c7ff;
+    }
+    .json-theme-dark .json-type-dialog { background:#1e1e1e; }
+    .json-theme-dark .json-type-head { border-bottom-color:#333; }
+    .json-theme-dark .json-type-title { color:#ddd; }
+    .json-theme-dark .json-type-output { background:#1a1a1a; color:#d4d4d4; }
+
     /* ===== 全屏：同一实例 CSS 放大（不再复制 DOM） ===== */
     #panel-json.panel.json-fullscreen {
       position: fixed;
@@ -604,6 +719,8 @@
     #panel-json.panel.json-fullscreen.json-fullscreen-dark {
       background: #141414;
     }
+    /* 全屏时编辑器不吃双栏的固定高度 */
+    #panel-json.panel.json-fullscreen #jsonEditor { height: auto !important; }
     body.json-fullscreen-lock {
       overflow: hidden;
     }
@@ -1110,22 +1227,45 @@
       <div class="card" data-page-node-id="85aef51erq2aSRCHWapoX3">
         <h2 style="display:flex;align-items:center;justify-content:space-between;" data-page-node-id="Cc2QspPVPDCUZmZhRt5yLU">
           <span data-page-node-id="an57eV7EfA65xSKbiBJ46k">📋 JSON 格式化 / 压缩</span>
-          <span data-page-node-id="QkB1wqYEn0DGTTWUdUyEkk">
+          <span class="json-head-actions" data-page-node-id="QkB1wqYEn0DGTTWUdUyEkk">
+            <button id="jsonDualBtn" class="json-view-btn" onclick="toggleDualView()" title="双栏预览">双栏</button>
+            <button id="jsonTypeBtn" class="json-view-btn" onclick="openTypeView()" title="生成类型定义">类型</button>
             <button id="jsonFindBtn" class="theme-toggle-btn" onclick="openFind()" title="查找 (Ctrl+F)" data-page-node-id="Hb7BFFcQJRvw5HuCAHe69D">🔍</button>
             <button id="jsonThemeBtn" class="theme-toggle-btn" onclick="toggleJsonTheme()" title="切换亮色/暗色主题" data-page-node-id="DAvUsy7SxKKHVz6gFo1Yuq">☀️</button>
             <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏编辑" data-page-node-id="xFVR1FTjfso8AzvofY7zvL">⛶</button>
           </span>
         </h2>
-        <div class="btn-group" style="margin-bottom:12px;" data-page-node-id="CzHriTpJL78bXp2BwwlABg">
-          <button class="btn" onclick="processJson('beautify')" data-page-node-id="zHAyAfHH7wUKH61OoMkPdm">美化</button>
-          <button class="btn" onclick="processJson('minify')" data-page-node-id="5voDdDcJIWGFvhLCR0gmlK">压缩</button>
-          <button class="btn copy-btn" onclick="copyJsonContent()" data-page-node-id="pveF16DicGVNl7qHab2866">复制</button>
-          <button class="btn btn-secondary" onclick="deleteSelectedLines()" title="删除已框选的整行（自由选段请拖拽选中后直接按 Delete / Backspace）">删除所选行</button>
-          <button class="btn" onclick="pasteJson()" data-page-node-id="Gf80nGArYiMGOBFCg91fge">粘贴</button>
-          <button class="btn" onclick="downloadJson()" data-page-node-id="bNsGx0TrkGUsKBAqjGtHCS">下载</button>
-          <button class="btn btn-secondary" onclick="clearJson()" data-page-node-id="mgfQlMVd5BBpmlpCm1EfP6">清空</button>
+        <div class="json-toolbar" data-page-node-id="CzHriTpJL78bXp2BwwlABg">
+          <div class="json-tool-group">
+            <button class="json-tool-icon" id="jsonUndoBtn" onclick="undoJson()" title="撤销 (Cmd/Ctrl+Z)">↶</button>
+            <button class="json-tool-icon" id="jsonRedoBtn" onclick="redoJson()" title="重做 (Shift+Cmd/Ctrl+Z)">↷</button>
+          </div>
+          <div class="json-tool-group">
+            <button class="btn" onclick="processJson('beautify')" data-page-node-id="zHAyAfHH7wUKH61OoMkPdm">美化</button>
+            <button class="btn" onclick="processJson('minify')" data-page-node-id="5voDdDcJIWGFvhLCR0gmlK">压缩</button>
+            <button class="btn" onclick="processJson('sort')" title="递归按 key 字母排序（数组保持原序）">排序</button>
+            <button class="btn" onclick="escapeJsonString()" title="JSON → 转义字符串字面量">转义</button>
+            <button class="btn" onclick="unescapeJsonString()" title="转义字符串字面量 → JSON">反转义</button>
+          </div>
+          <div class="json-tool-group">
+            <label class="json-tool-label" for="jsonIndentSelect">缩进</label>
+            <select id="jsonIndentSelect" class="json-indent-select" onchange="setJsonIndent(this.value)" title="美化时的缩进方式">
+              <option value="2">2 空格</option>
+              <option value="4">4 空格</option>
+              <option value="tab">Tab</option>
+            </select>
+          </div>
+          <div class="json-tool-group">
+            <button class="btn" onclick="importJsonFile()" title="导入本地 JSON 文件">📂 导入</button>
+            <input type="file" id="jsonFileInput" accept=".json,.txt,application/json" style="display:none;">
+            <button class="btn copy-btn" onclick="copyJsonContent()" data-page-node-id="pveF16DicGVNl7qHab2866">复制</button>
+            <button class="btn" onclick="pasteJson()" data-page-node-id="Gf80nGArYiMGOBFCg91fge">粘贴</button>
+            <button class="btn" onclick="downloadJson()" data-page-node-id="bNsGx0TrkGUsKBAqjGtHCS">下载</button>
+            <button class="btn btn-secondary" onclick="deleteSelectedLines()" title="删除已框选的整行（自由选段请拖拽选中后直接按 Delete / Backspace）">删除所选行</button>
+            <button class="btn btn-secondary" onclick="clearJson()" data-page-node-id="mgfQlMVd5BBpmlpCm1EfP6">清空</button>
+          </div>
         </div>
-        <div class="json-sel-hint">💡 拖拽可自由选段（支持跨行），按 Delete / Backspace 删除；行号区拖拽或 Shift+点击 = 整行选择，Ctrl/Cmd+A 全选</div>
+        <div class="json-sel-hint">💡 内容区拖选跨行 = 整行选择（行内拖选 = 选字），按 Delete / Backspace 或「删除所选行」删除；行号区拖拽、Shift+点击 也可整行选，Ctrl/Cmd+A 全选</div>
         <div id="jsonFindBar" class="json-find-bar" style="display:none;" data-page-node-id="KKNhPJZQpYlZsuZ6KxIskH">
           <input id="jsonFindInput" type="text" placeholder="查找内容..." oninput="runFind()" onkeydown="findKeydown(event)" data-page-node-id="qm2StHeQPreqE1bmnuCZuv">
           <span id="jsonFindCount" class="json-find-count" data-page-node-id="4B6ZiWcOPEjsXPUQBQezCb">0 / 0</span>
@@ -1134,16 +1274,46 @@
           <button class="btn btn-secondary" onclick="closeFind()" data-page-node-id="BilVzMHg7FmmF7mwBiIZqi">关闭</button>
         </div>
         <div class="card-body" data-page-node-id="A2d6Wphmbhae14wNnSfLBT">
-        <div class="input-group" data-page-node-id="xZngWNcnWAeiAjK7NnrT1T">
+        <div class="json-editor-wrap" id="jsonEditorWrap">
+        <div class="input-group json-edit-col" data-page-node-id="xZngWNcnWAeiAjK7NnrT1T">
           <label style="display:flex;align-items:center;gap:10px;" data-page-node-id="ZY4ImWY94bpZ3zmDMZCRdL">输入 JSON
             <span id="jsonStatus" style="color:#888;font-size:0.85rem;display:none;font-weight:400;" data-page-node-id="ACEqvQDjC4cFBmXnqIb17J"></span>
             <span id="jsonInputError" class="json-error" style="display:none;font-weight:400;margin:0;" data-page-node-id="kAzVjSgeAXKXoJX1iqDhf0"></span>
           </label>
           <div id="jsonEditor" class="json-editor" data-page-node-id="OAx186irssYnpPMmvqoMqc">
             <div id="jsonEditorLines" class="json-editor-lines" data-page-node-id="hDO906WwHTWWLMGPVuv74o"></div>
+            <div class="json-drop-overlay">📂 松开导入 JSON 文件</div>
+          </div>
+        </div>
+        <div class="input-group json-preview-col" id="jsonPreviewCol" style="display:none;">
+          <label style="display:flex;align-items:center;gap:10px;">实时预览
+            <span id="jsonPreviewMeta" class="json-preview-meta"></span>
+          </label>
+          <div id="jsonPreview" class="json-editor json-preview">
+            <div id="jsonPreviewLines" class="json-preview-lines"></div>
           </div>
         </div>
         </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON 类型定义弹层 -->
+    <div id="jsonTypeModal" class="json-type-modal" style="display:none;">
+      <div class="json-type-dialog">
+        <div class="json-type-head">
+          <span class="json-type-title">类型定义</span>
+          <div class="json-type-actions">
+            <select id="jsonTypeLang" class="json-indent-select" onchange="renderJsonTypes()">
+              <option value="ts">TypeScript</option>
+              <option value="go">Go</option>
+              <option value="java">Java</option>
+            </select>
+            <button class="btn" onclick="copyJsonTypes()">复制</button>
+            <button class="btn btn-secondary" onclick="closeTypeView()">关闭</button>
+          </div>
+        </div>
+        <pre id="jsonTypeOutput" class="json-type-output"></pre>
       </div>
     </div>
 
@@ -1597,6 +1767,82 @@ console.log('代码块');
     let collapsedFolds = new Set();  // 已折叠的行号集合
     let activeLineEl = null;         // 当前获得焦点的行元素
 
+    // 缩进方式：2 / 4 空格 / Tab
+    let jsonIndent = 2;
+    function getIndentValue() {
+      return jsonIndent === 'tab' ? '\t' : Number(jsonIndent);
+    }
+
+    // 撤销 / 重做（快照栈）
+    let undoStack = [];
+    let redoStack = [];
+    let lastUndoAt = 0;
+    const UNDO_LIMIT = 80;
+
+    function snapshotJson() {
+      return { lines: jsonLines.slice(), collapsed: Array.from(collapsedFolds) };
+    }
+
+    function pushUndo() {
+      const snap = snapshotJson();
+      const top = undoStack[undoStack.length - 1];
+      if (top && top.lines.join('\n') === snap.lines.join('\n')) return;
+      undoStack.push(snap);
+      if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+      redoStack = [];
+      updateUndoButtons();
+    }
+
+    // 连续输入合并为一次撤销（800ms 窗口）
+    function pushUndoThrottled() {
+      const now = Date.now();
+      if (now - lastUndoAt < 800) return;
+      pushUndo();
+      lastUndoAt = now;
+    }
+
+    function applySnapshot(snap) {
+      jsonLines = snap.lines.slice();
+      collapsedFolds = new Set(snap.collapsed);
+      foldPairs = findFoldPairs(jsonLines.join('\n'));
+      clearFindHighlights();
+      clearErrorHighlights();
+      clearLineSelection();
+      renderEditor();
+      applyTheme();
+      validateJsonLive();
+      schedulePreview();
+    }
+
+    function undoJson() {
+      if (!undoStack.length) { showToast('没有可撤销的操作'); return; }
+      syncAllLinesFromDOM();
+      redoStack.push(snapshotJson());
+      const snap = undoStack.pop();
+      applySnapshot(snap);
+      lastUndoAt = 0;
+      updateUndoButtons();
+      showToast('已撤销');
+    }
+
+    function redoJson() {
+      if (!redoStack.length) { showToast('没有可重做的操作'); return; }
+      syncAllLinesFromDOM();
+      undoStack.push(snapshotJson());
+      const snap = redoStack.pop();
+      applySnapshot(snap);
+      lastUndoAt = 0;
+      updateUndoButtons();
+      showToast('已重做');
+    }
+
+    function updateUndoButtons() {
+      const u = document.getElementById('jsonUndoBtn');
+      const r = document.getElementById('jsonRedoBtn');
+      if (u) u.disabled = undoStack.length === 0;
+      if (r) r.disabled = redoStack.length === 0;
+    }
+
     // 获取编辑器全部文本
     function getJsonText() {
       return jsonLines.join('\n');
@@ -1638,6 +1884,7 @@ console.log('代码块');
         html += buildLineHtml(i, jsonLines[i], isFoldable, hidden);
       }
       linesEl.innerHTML = html;
+      schedulePreview();
     }
 
     function buildLineHtml(lineIndex, text, isFoldable, hidden, idPrefix) {
@@ -1713,13 +1960,17 @@ console.log('代码块');
         let result, msg;
 
         if (mode === 'beautify') {
-          result = JSON.stringify(parsed, null, 2);
+          result = JSON.stringify(parsed, null, getIndentValue());
           msg = '✓ 已美化';
+        } else if (mode === 'sort') {
+          result = JSON.stringify(sortJsonKeys(parsed), null, getIndentValue());
+          msg = '✓ 已排序';
         } else {
           result = JSON.stringify(parsed);
           msg = '✓ 已压缩';
         }
 
+        pushUndo();
         loadJsonText(result);
 
         const bytes = new Blob([result]).size;
@@ -1735,6 +1986,96 @@ console.log('代码块');
       }
     }
 
+    // ========== 排序 / 缩进 / 转义 / 文件导入 ==========
+
+    // 递归按 key 字母排序（数组保持原序）
+    function sortJsonKeys(value) {
+      if (Array.isArray(value)) return value.map(sortJsonKeys);
+      if (value && typeof value === 'object') {
+        const out = {};
+        Object.keys(value).sort().forEach(k => { out[k] = sortJsonKeys(value[k]); });
+        return out;
+      }
+      return value;
+    }
+
+    function setJsonIndent(value) {
+      jsonIndent = value === 'tab' ? 'tab' : Number(value);
+      try { localStorage.setItem('jsonIndent', String(jsonIndent)); } catch (e) {}
+      syncAllLinesFromDOM();
+      try {
+        const parsed = JSON.parse(getJsonText());
+        pushUndo();
+        loadJsonText(JSON.stringify(parsed, null, getIndentValue()));
+        showToast('缩进已切换为' + (jsonIndent === 'tab' ? ' Tab' : ' ' + jsonIndent + ' 空格'));
+      } catch (e) {
+        showToast('当前内容不是合法 JSON，缩进将在下次美化时生效');
+      }
+    }
+
+    // 转义：JSON → 字符串字面量（带外层引号，可直接粘进代码）
+    function escapeJsonString() {
+      syncAllLinesFromDOM();
+      const text = getJsonText().trim();
+      if (!text) { showToast('没有可转义的内容'); return; }
+      try {
+        JSON.parse(text);
+      } catch (e) {
+        showToast('当前内容不是合法 JSON');
+        return;
+      }
+      pushUndo();
+      loadJsonText(JSON.stringify(text));
+      showToast('已转义为字符串字面量');
+    }
+
+    // 反转义：字符串字面量 → 格式化 JSON
+    function unescapeJsonString() {
+      syncAllLinesFromDOM();
+      const text = getJsonText().trim();
+      if (!text) { showToast('没有可反转义的内容'); return; }
+
+      const candidates = [text];
+      if (!(text.startsWith('"') && text.endsWith('"'))) {
+        candidates.push('"' + text.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"');
+      }
+
+      for (const cand of candidates) {
+        try {
+          const parsed = JSON.parse(cand);
+          if (typeof parsed !== 'string') continue;
+          pushUndo();
+          try {
+            loadJsonText(JSON.stringify(JSON.parse(parsed), null, getIndentValue()));
+          } catch (e) {
+            loadJsonText(parsed);
+          }
+          showToast('已反转义');
+          return;
+        } catch (e) { /* 试下一个 */ }
+      }
+      showToast('反转义失败：内容不是合法的字符串字面量');
+    }
+
+    // 导入本地 JSON 文件
+    function importJsonFile() {
+      const input = document.getElementById('jsonFileInput');
+      if (input) input.click();
+    }
+
+    function importJsonFileContent(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const text = String(ev.target.result || '');
+        pushUndo();
+        importJsonText(text);
+        showToast('已导入 ' + file.name);
+      };
+      reader.onerror = function() { showToast('文件读取失败'); };
+      reader.readAsText(file, 'utf-8');
+    }
+
     // ========== 行选区（整行选择：行号区拖选 / Shift 点选 / Ctrl+A） ==========
     // 内容区拖拽默认走浏览器原生自由选段（可跨行）；但原生选区在跨宿主删除等
     // 编辑操作上不可靠，故另建行级选区模型处理"整行"操作。复制优先级：
@@ -1742,7 +2083,8 @@ console.log('代码块');
     let lineSelAnchor = -1;      // Shift 点选的锚点行
     let lineSelLo = -1;          // 选区起始行（含）
     let lineSelHi = -1;          // 选区结束行（含）
-    let lineDragging = false;
+    let lineDragging = false;    // 行号区拖拽中
+    let contentDragging = false; // 内容区拖拽中（跨行时转为整行选择）
 
     function hasLineSelection() {
       return lineSelLo >= 0 && lineSelHi >= lineSelLo;
@@ -1823,20 +2165,36 @@ console.log('代码块');
       clearLineSelection();
       lineSelAnchor = idx;   // 记录锚点，供之后 Shift+点击做整行范围选择
       lineDragging = false;
+      contentDragging = true;
     });
 
     document.addEventListener('mousemove', function(e) {
-      if (!lineDragging) return;   // 仅行号区拖拽才做整行选择
-      const idx = lineIndexFromPoint(e.clientX, e.clientY);
-      if (idx < 0) return;
-      setLineSelection(lineSelAnchor, idx);
       const editor = document.getElementById('jsonEditor');
+
+      // ① 行号区拖拽：始终整行选择
+      if (lineDragging) {
+        const idx = lineIndexFromPoint(e.clientX, e.clientY);
+        if (idx < 0) return;
+        setLineSelection(lineSelAnchor, idx);
+        if (editor) editor.classList.add('json-dragging');
+        try { window.getSelection().removeAllRanges(); } catch (err) {}
+        return;
+      }
+
+      // ② 内容区拖拽越过行边界：自动转为整行选择
+      //    （每行是独立 contenteditable，原生选区无法跨宿主，
+      //      若不接管就只能选到单行内的一小段文字）
+      if (!contentDragging || lineSelAnchor < 0) return;
+      const idx = lineIndexFromPoint(e.clientX, e.clientY);
+      if (idx < 0 || idx === lineSelAnchor) return;
+      setLineSelection(lineSelAnchor, idx);
       if (editor) editor.classList.add('json-dragging');
       try { window.getSelection().removeAllRanges(); } catch (err) {}
     });
 
     document.addEventListener('mouseup', function() {
       lineDragging = false;
+      contentDragging = false;
       const editor = document.getElementById('jsonEditor');
       if (editor) editor.classList.remove('json-dragging');
     });
@@ -1850,6 +2208,22 @@ console.log('代码块');
     // ========== 删除已框选的整段行 ==========
     // 框选若干行（拖选 / Shift+点击 / Ctrl+A）后，按 Delete / Backspace 即删除 [lo, hi]。
     function deleteSelectedLines() {
+      // 无行选区时回退到原生选区：行内选字 / 跨行片段都能删
+      if (!hasLineSelection()) {
+        const info = getNativeRangeInfo();
+        if (info) {
+          if (info.startLine === info.endLine && info.startOffset === info.endOffset) {
+            showToast('请先选择要删除的内容');
+            return;
+          }
+          deleteNativeFragment(info);
+          showToast('已删除所选内容');
+          return;
+        }
+        showToast('请先选择要删除的行：内容区跨行拖选，或拖行号区');
+        return;
+      }
+
       const lo = lineSelLo, hi = lineSelHi;
       if (lo < 0 || hi < lo) return;
 
@@ -1857,6 +2231,7 @@ console.log('代码块');
       const focusIdx = lo > 0 ? lo - 1 : 0;
 
       // 从真源 jsonLines 移除所选行
+      pushUndo();
       jsonLines.splice(lo, hi - lo + 1);
       if (jsonLines.length === 0) jsonLines = [''];
 
@@ -1946,6 +2321,7 @@ console.log('代码块');
       const lastText = (jsonLines[endLine] || '').slice(endOffset);
       const merged = firstText + lastText;
 
+      pushUndo();
       jsonLines.splice(startLine, endLine - startLine + 1, merged);
       if (jsonLines.length === 0) jsonLines = [''];
 
@@ -2056,7 +2432,7 @@ console.log('代码块');
       const raw = text.replace(/\r\n?/g, '\n');
       try {
         const parsed = JSON.parse(raw);
-        loadJsonText(JSON.stringify(parsed, null, 2));
+        loadJsonText(JSON.stringify(parsed, null, getIndentValue()));
         showToast('已粘贴并格式化');
       } catch (e) {
         loadJsonText(raw);
@@ -2380,6 +2756,7 @@ console.log('代码块');
       const lastLine = parts[parts.length - 1] + after;
       const middle = parts.slice(1, parts.length - 1);
 
+      pushUndo();
       jsonLines[lineIndex] = firstLine;
       jsonLines.splice(lineIndex + 1, 0, ...middle, lastLine);
       collapsedFolds = updateCollapsedAfterInsert(lineIndex + 1);
@@ -2470,6 +2847,7 @@ console.log('代码块');
 
       const panel = document.getElementById('panel-json');
       if (panel) {
+        panel.classList.toggle('json-theme-dark', isDark);
         panel.classList.toggle('json-fullscreen-dark', isDark && panel.classList.contains('json-fullscreen'));
       }
 
@@ -2656,12 +3034,15 @@ console.log('代码块');
     document.addEventListener('input', function(e) {
       const contentEl = e.target.closest ? e.target.closest('.json-editor-content') : null;
       if (!contentEl) return;
+      // 记录输入前的状态（连续输入合并为一步撤销）
+      pushUndoThrottled();
       const lineEl = contentEl.closest('.json-editor-line');
       if (lineEl) syncLineFromDOM(parseInt(lineEl.dataset.line));
       clearTimeout(jsonValidateTimer);
       jsonValidateTimer = setTimeout(function() {
         refreshFoldArrows();
         validateJsonLive();
+        schedulePreview();
       }, 300);
     });
 
@@ -2675,6 +3056,368 @@ console.log('代码块');
           openFind();
         }
       }
+    });
+
+    // Cmd/Ctrl+Z 撤销，Shift+Cmd/Ctrl+Z 或 Ctrl+Y 重做（仅 JSON 面板）
+    document.addEventListener('keydown', function(e) {
+      const panel = document.getElementById('panel-json');
+      if (!panel || !panel.classList.contains('active')) return;
+      if (!(e.metaKey || e.ctrlKey)) return;
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      const key = (e.key || '').toLowerCase();
+      if (key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) redoJson(); else undoJson();
+      } else if (key === 'y') {
+        e.preventDefault();
+        redoJson();
+      }
+    });
+
+    // ========== 缩进偏好 / 文件导入 / 拖拽导入 ==========
+    (function initJsonToolbar() {
+      try {
+        const saved = localStorage.getItem('jsonIndent');
+        if (saved) {
+          jsonIndent = saved === 'tab' ? 'tab' : Number(saved);
+          const sel = document.getElementById('jsonIndentSelect');
+          if (sel) sel.value = String(jsonIndent);
+        }
+      } catch (e) {}
+      updateUndoButtons();
+
+      const fileInput = document.getElementById('jsonFileInput');
+      if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+          const file = e.target.files && e.target.files[0];
+          if (file) importJsonFileContent(file);
+          e.target.value = '';
+        });
+      }
+
+      const editor = document.getElementById('jsonEditor');
+      if (editor) {
+        let dragDepth = 0;
+        const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') !== -1;
+        editor.addEventListener('dragenter', function(e) {
+          if (!hasFiles(e)) return;
+          e.preventDefault();
+          dragDepth++;
+          editor.classList.add('json-drop-active');
+        });
+        editor.addEventListener('dragover', function(e) {
+          if (!hasFiles(e)) return;
+          e.preventDefault();
+        });
+        editor.addEventListener('dragleave', function(e) {
+          dragDepth = Math.max(0, dragDepth - 1);
+          if (dragDepth === 0) editor.classList.remove('json-drop-active');
+        });
+        editor.addEventListener('drop', function(e) {
+          if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+          e.preventDefault();
+          dragDepth = 0;
+          editor.classList.remove('json-drop-active');
+          importJsonFileContent(e.dataTransfer.files[0]);
+        });
+      }
+    })();
+
+    // ========== 双栏实时预览 ==========
+    let dualView = false;
+    let previewTimer = null;
+
+    function toggleDualView() {
+      dualView = !dualView;
+      const col = document.getElementById('jsonPreviewCol');
+      const btn = document.getElementById('jsonDualBtn');
+      const editor = document.getElementById('jsonEditor');
+      if (col) col.style.display = dualView ? '' : 'none';
+      if (btn) btn.classList.toggle('active', dualView);
+      if (editor) editor.style.height = dualView ? '420px' : '';
+      if (dualView) renderPreview();
+    }
+
+    function schedulePreview() {
+      if (!dualView) return;
+      clearTimeout(previewTimer);
+      previewTimer = setTimeout(renderPreview, 250);
+    }
+
+    function renderPreview() {
+      const linesEl = document.getElementById('jsonPreviewLines');
+      const metaEl = document.getElementById('jsonPreviewMeta');
+      if (!linesEl) return;
+      const text = getJsonText();
+
+      if (!text.trim()) {
+        linesEl.innerHTML = '';
+        if (metaEl) metaEl.textContent = '';
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(text);
+        const pretty = JSON.stringify(parsed, null, getIndentValue());
+        const lines = pretty.split('\n');
+        let html = '';
+        for (let i = 0; i < lines.length; i++) {
+          html += `<div class="json-preview-row" data-line="${i}">
+            <span class="json-preview-num">${i + 1}</span>
+            <span class="json-preview-text">${escapeHtml(lines[i]) || ' '}</span>
+          </div>`;
+        }
+        linesEl.innerHTML = html;
+        if (metaEl) metaEl.textContent = `✓ ${lines.length} 行 · ${formatBytes(new Blob([pretty]).size)}`;
+      } catch (e) {
+        const line = jsonErrorLine(text, e);
+        linesEl.innerHTML = '<div class="json-preview-error">✗ '
+          + (line ? '第 ' + line + ' 行：' : '')
+          + escapeHtml(e.message) + '</div>';
+        if (metaEl) metaEl.textContent = '';
+      }
+    }
+
+    // ========== 类型视图：JSON → TypeScript / Go / Java ==========
+    function pascalCase(input) {
+      const clean = String(input).replace(/[^A-Za-z0-9]+/g, ' ').trim();
+      if (!clean) return 'Field';
+      return clean.split(/\s+/)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join('');
+    }
+
+    function singularize(word) {
+      const w = String(word);
+      if (/ies$/i.test(w)) return w.slice(0, -3) + 'y';
+      if (/(ses|xes|zes|ches|shes)$/i.test(w)) return w.slice(0, -2);
+      if (/s$/i.test(w) && !/ss$/i.test(w)) return w.slice(0, -1);
+      return w;
+    }
+
+    // 把 JSON 结构提取为命名类型集合（嵌套对象、对象数组都会生成独立类型）
+    function jsonToTypeModel(root, rootName) {
+      const defs = [];
+      const used = {};
+
+      function uniqueName(base) {
+        let name = base || 'Item';
+        if (used[name]) {
+          let i = 2;
+          while (used[name + i]) i++;
+          name = name + i;
+        }
+        used[name] = true;
+        return name;
+      }
+
+      function buildArrayType(items, hint) {
+        if (!items.length) return { type: 'any[]' };
+        const itemHint = singularize(hint || 'item');
+        const allObjects = items.every(v => v && typeof v === 'object' && !Array.isArray(v));
+
+        if (allObjects) {
+          const merged = {};
+          items.forEach(obj => {
+            Object.keys(obj).forEach(k => {
+              if (!merged[k]) merged[k] = { sample: obj[k], count: 0 };
+              merged[k].count++;
+            });
+          });
+          const fields = Object.keys(merged).map(k => ({
+            name: k,
+            type: buildType(merged[k].sample, k).type,
+            optional: merged[k].count < items.length
+          }));
+          const name = uniqueName(pascalCase(itemHint));
+          defs.push({ name, fields });
+          return { type: name + '[]' };
+        }
+
+        const t = buildType(items[0], itemHint);
+        return { type: t.type + '[]' };
+      }
+
+      function buildType(value, hint) {
+        if (value === null || value === undefined) return { type: 'null' };
+        if (Array.isArray(value)) return buildArrayType(value, hint);
+        if (typeof value === 'object') {
+          const fields = Object.keys(value).map(k => ({
+            name: k,
+            type: buildType(value[k], k).type,
+            optional: false
+          }));
+          const name = uniqueName(pascalCase(hint));
+          defs.push({ name, fields });
+          return { type: name };
+        }
+        if (typeof value === 'string') return { type: 'string' };
+        if (typeof value === 'number') return { type: Number.isInteger(value) ? 'integer' : 'number' };
+        if (typeof value === 'boolean') return { type: 'boolean' };
+        return { type: 'any' };
+      }
+
+      buildType(root, rootName || 'Root');
+      return { defs: defs.slice().reverse() };
+    }
+
+    function toGoType(t) {
+      if (t.endsWith('[]')) return '[]' + toGoType(t.slice(0, -2));
+      switch (t) {
+        case 'string': return 'string';
+        case 'integer': return 'int64';
+        case 'number': return 'float64';
+        case 'boolean': return 'bool';
+        case 'null': return 'interface{}';
+        case 'any': return 'interface{}';
+        default: return t;
+      }
+    }
+
+    function toJavaType(t) {
+      if (t.endsWith('[]')) return 'List<' + toJavaType(t.slice(0, -2)) + '>';
+      switch (t) {
+        case 'string': return 'String';
+        case 'integer': return 'Long';
+        case 'number': return 'Double';
+        case 'boolean': return 'Boolean';
+        case 'null': return 'Object';
+        case 'any': return 'Object';
+        default: return t;
+      }
+    }
+
+    function toTsType(t) {
+      if (t.endsWith('[]')) return toTsType(t.slice(0, -2)) + '[]';
+      switch (t) {
+        case 'integer': return 'number';
+        case 'null': return 'null';
+        case 'any': return 'any';
+        default: return t;
+      }
+    }
+
+    // Go 字段名：常见缩写全大写（userId → UserID）
+    function goFieldName(name) {
+      const INITIALISMS = {
+        id:'ID', url:'URL', uri:'URI', api:'API', http:'HTTP', https:'HTTPS',
+        json:'JSON', sql:'SQL', ip:'IP', ui:'UI', uuid:'UUID', html:'HTML',
+        xml:'XML', ts:'TS', db:'DB', cpu:'CPU', os:'OS', ok:'OK'
+      };
+      const parts = String(name)
+        .replace(/[^A-Za-z0-9]+/g, ' ')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .flatMap(w => w.split(/(?=[A-Z])/).filter(Boolean));
+      const out = parts.map(w => {
+        const low = w.toLowerCase();
+        if (INITIALISMS[low]) return INITIALISMS[low];
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      }).join('');
+      return out.replace(/^([0-9])/, 'F$1') || 'Field';
+    }
+
+    function generateTypeCode(lang) {
+      syncAllLinesFromDOM();
+      const text = getJsonText().trim();
+      if (!text) return '// 请先输入 JSON 内容';
+
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (e) {
+        return '// 当前内容不是合法 JSON\n// ' + e.message;
+      }
+
+      if (parsed === null || typeof parsed !== 'object') {
+        return '// 根节点不是对象或数组，无法生成结构类型\n// 推断类型：'
+          + (parsed === null ? 'null' : typeof parsed);
+      }
+
+      const defs = jsonToTypeModel(parsed, 'Root').defs;
+      if (!defs.length) return '// 没有可生成的字段';
+
+      if (lang === 'go') {
+        const blocks = defs.map(d => {
+          const rows = d.fields.map(f => ({
+            name: goFieldName(f.name),
+            type: toGoType(f.type),
+            tag: '`json:"' + f.name + (f.optional ? ',omitempty' : '') + '"`'
+          }));
+          const nameW = rows.length ? Math.max(...rows.map(r => r.name.length)) : 0;
+          const typeW = rows.length ? Math.max(...rows.map(r => r.type.length)) : 0;
+          const body = rows.map(r =>
+            '\t' + r.name.padEnd(nameW) + ' ' + r.type.padEnd(typeW) + ' ' + r.tag
+          ).join('\n');
+          return `type ${d.name} struct {\n${body}\n}`;
+        });
+        return 'package main\n\n' + blocks.join('\n\n');
+      }
+
+      if (lang === 'java') {
+        const blocks = defs.map((d, i) => {
+          const body = d.fields.map(f => {
+            const jf = String(f.name).replace(/[^A-Za-z0-9_$]/g, '_').replace(/^([0-9])/, '_$1');
+            return `    private ${toJavaType(f.type)} ${jf};`;
+          }).join('\n');
+          return `${i === 0 ? 'public ' : ''}class ${d.name} {\n${body}\n}`;
+        });
+        return 'import java.util.List;\n\n' + blocks.join('\n\n');
+      }
+
+      const blocks = defs.map(d => {
+        const body = d.fields.map(f => {
+          const name = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(f.name) ? f.name : JSON.stringify(f.name);
+          return `  ${name}${f.optional ? '?' : ''}: ${toTsType(f.type)};`;
+        }).join('\n');
+        return `export interface ${d.name} {\n${body}\n}`;
+      });
+      return blocks.join('\n\n');
+    }
+
+    function renderJsonTypes() {
+      const out = document.getElementById('jsonTypeOutput');
+      const lang = document.getElementById('jsonTypeLang');
+      if (!out) return;
+      out.textContent = generateTypeCode(lang ? lang.value : 'ts');
+    }
+
+    function openTypeView() {
+      const modal = document.getElementById('jsonTypeModal');
+      if (!modal) return;
+      modal.style.display = 'flex';
+      renderJsonTypes();
+    }
+
+    function closeTypeView() {
+      const modal = document.getElementById('jsonTypeModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function copyJsonTypes() {
+      const out = document.getElementById('jsonTypeOutput');
+      const code = out ? (out.textContent || '') : '';
+      if (!code.trim()) { showToast('没有可复制的内容'); return; }
+      copyText(code).then(ok => showToast(ok ? '已复制类型定义' : '复制失败，请手动选择'));
+    }
+
+    // 类型弹层：Esc 关闭、点遮罩关闭
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('jsonTypeModal');
+      if (!modal || modal.style.display === 'none') return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closeTypeView();
+      }
+    }, true);
+
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('jsonTypeModal');
+      if (!modal || modal.style.display === 'none') return;
+      if (e.target === modal) closeTypeView();
     });
 
     // ========== 全屏模式（同一实例 CSS 放大，不复制 DOM） ==========
